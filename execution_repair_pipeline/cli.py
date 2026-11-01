@@ -37,7 +37,19 @@ def main() -> None:
     p.add_argument("--n-eval", type=int, default=100)
     p.add_argument("--margin", type=float, default=0.10)
     p.add_argument("--max-new-tokens", type=int, default=128)
+    d = sub.add_parser("data")
+    d.add_argument("step", choices=["corpus", "curate"])
+    d.add_argument("--out", default="data/v1")
+    d.add_argument("--num-questions", type=int, default=10)
+    d.add_argument("--no-llm-judge", action="store_true")
     args = parser.parse_args()
+    if args.cmd == "data":
+        from execution_repair_pipeline.data.corpus import build_corpus
+        from execution_repair_pipeline.data.curate import curate
+        if args.step == "corpus":
+            print(build_corpus(args.out))
+        else:
+            print(curate(f"{args.out}/corpus.jsonl", f"{args.out}/curated", args.num_questions, not args.no_llm_judge))
     if args.cmd == "probe":
         from execution_repair_pipeline.probe import run_probe
         report = run_probe(args.out, args.rate, args.n_train, args.n_eval, args.margin, args.max_new_tokens)
