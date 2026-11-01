@@ -82,6 +82,18 @@ Aya Expanse 32B is reached through `router.huggingface.co` with provider `cohere
 
 **v1 result (Nov 1):** 750 generated → 748 passed the Aya grounding gate → 542 train / 54 validation after the numeric filter and question de-duplication across splits. Dropped rows were mostly computed values (differences, ratios) that can't be checked against the chunk text. Use `sft_alpaca.numeric.jsonl`. About 10 minutes of generation.
 
+## Arm runs (dev)
+
+```bash
+scripts/hf_job.sh arms-a-b0 arms --arms A,B0
+scripts/hf_job.sh arms-b-e  arms --arms B,E      # E (ReSta, alpha 0.25) repairs B's checkpoint in the same job
+scripts/hf_job.sh arms-c    arms --arms C        # SafeGrad with the 60 prompt-aligned refusals
+```
+
+Each arm: 542 finance rows (B, C: +60 BeaverTails harmful = 10%), 1 epoch, batch 4, lr 1e-4, seed 0. Evaluated on the same 100 held-out harmful prompts as the probe (WildGuard + keyword), finance accuracy on the 54 validation pairs (every gold number must appear in the answer), and over-refusal on those finance prompts. These are **dev** results (`plan_sha256 = UNAPPROVED_DEV_RUN`); headline numbers come later from the approved plan and Jason's holdout.
+
+Commit mapping after message rewrite (code unchanged): 7f52a5f → 6d32f3c, 30baf50 → c1d4593.
+
 ## Run log
 
 | Date | Arm | Seed | Status | Manifest | Notes |

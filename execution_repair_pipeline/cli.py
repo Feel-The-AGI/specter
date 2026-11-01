@@ -48,7 +48,18 @@ def main() -> None:
     d.add_argument("--num-questions", type=int, default=10)
     d.add_argument("--no-llm-judge", action="store_true")
     d.add_argument("--max-samples", type=int)
+    a = sub.add_parser("arms")
+    a.add_argument("--arms", required=True)
+    a.add_argument("--out", default="runs/arms")
+    a.add_argument("--rate", type=float, default=0.10)
+    a.add_argument("--seed", type=int, default=0)
+    a.add_argument("--judges", default="keyword,wildguard")
+    a.add_argument("--keep-checkpoints", action="store_true")
     args = parser.parse_args()
+    if args.cmd == "arms":
+        from execution_repair_pipeline.arm_runner import run_arms
+        for r in run_arms(args.arms.split(","), args.out, args.rate, args.seed, args.judges.split(","), args.keep_checkpoints):
+            print(r.arm, {m.metric: m.value for m in r.metrics})
     if args.cmd == "data":
         from execution_repair_pipeline.data.corpus import build_corpus
         from execution_repair_pipeline.data.curate import curate
