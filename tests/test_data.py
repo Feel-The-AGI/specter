@@ -25,7 +25,9 @@ def test_corpus_numbers_ground_answers(tmp_path):
     assert not is_grounded("It grew strongly.", allowed)
 
 
-def test_curate_without_key_is_blocked(tmp_path, monkeypatch):
-    monkeypatch.delenv("COHERE_API_KEY", raising=False)
+def test_curate_without_hf_token_is_blocked(tmp_path, monkeypatch):
+    import execution_repair_pipeline.data.curate as c
+    monkeypatch.delenv("HF_TOKEN", raising=False)
+    monkeypatch.setattr(c, "require", lambda name: type("H", (), {"get_token": staticmethod(lambda: None)}))
     with pytest.raises(ToolkitUnavailable):
         curate(str(tmp_path / "corpus.jsonl"), str(tmp_path / "out"))

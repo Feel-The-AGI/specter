@@ -36,7 +36,8 @@ The PRD expected WildGuard approval to "take days"; the HF API says it's auto-ap
 ## CuratorKIT
 
 - `Curator(CuratorConfig(...)).run()`; outputs a HF-loadable folder (`sft_messages`, `sft_sharegpt`, ...) with `manifest.json` and `checksums.txt`.
-- **QA generation needs an LLM** through LiteLLM (Cohere API, Ollama or a local vLLM). Tiny Aya isn't in Ollama. **Decision needed:** which generator/judge model do we use, and who pays? Cohere API (`cohere_chat/c4ai-aya-expanse-32b`) fits the Cohere story.
+- **QA generation needs an LLM** through LiteLLM. **Decided:** Aya Expanse 32B via HF Inference Providers: `llm_model="openai/CohereLabs/aya-expanse-32b:cohere"`, `llm_api_base="https://router.huggingface.co/v1"`, HF token as the key. Billed to HF credits.
+- `max_samples` truncates after generation; it does not reduce API calls.
 - **Arm D filter:** gate `type="toxicity"` (Detoxify, `pip install "curatorkit[hygiene]"`), deterministic and needs no API. Thresholds: `toxicity_classifier_reject_threshold=0.5`.
 - Small judges often return bad JSON, so samples get rejected; `judge_on_error="pass"` keeps them.
 
@@ -44,5 +45,5 @@ The PRD expected WildGuard approval to "take days"; the HF API says it's auto-ap
 
 1. B0/B/D use `PlainSFTTrainer`, not a separate PEFT script (`execution_repair_pipeline/training/` may stay empty).
 2. WildGuard access is probably not a blocker.
-3. New open item: the CuratorKIT generator LLM choice and its API key.
+3. Generator LLM: Aya Expanse 32B via HF Inference Providers (decided Nov 1).
 4. New open item: custom multilingual prompts through SafeTune's judge.

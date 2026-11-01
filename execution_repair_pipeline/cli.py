@@ -47,6 +47,7 @@ def main() -> None:
     d.add_argument("--out", default="data/v1")
     d.add_argument("--num-questions", type=int, default=10)
     d.add_argument("--no-llm-judge", action="store_true")
+    d.add_argument("--max-samples", type=int)
     args = parser.parse_args()
     if args.cmd == "data":
         from execution_repair_pipeline.data.corpus import build_corpus
@@ -54,7 +55,7 @@ def main() -> None:
         if args.step == "corpus":
             print(build_corpus(args.out))
         else:
-            print(curate(f"{args.out}/corpus.jsonl", f"{args.out}/curated", args.num_questions, not args.no_llm_judge))
+            print(curate(f"{args.out}/corpus.jsonl", f"{args.out}/curated", args.num_questions, not args.no_llm_judge, max_samples=args.max_samples))
     if args.cmd == "probe":
         from execution_repair_pipeline.probe import run_probe
         report = run_probe(args.out, args.rate, args.n_train, args.n_eval, args.margin, args.max_new_tokens, args.judges.split(","))
