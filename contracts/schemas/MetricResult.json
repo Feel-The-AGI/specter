@@ -1,0 +1,106 @@
+{
+  "$defs": {
+    "ResultStatus": {
+      "enum": [
+        "MEASURED",
+        "MOCK",
+        "NOT_EXECUTED",
+        "BLOCKED_RESOURCE"
+      ],
+      "title": "ResultStatus",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "arm": {
+      "title": "Arm",
+      "type": "string"
+    },
+    "ci_high": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ci High"
+    },
+    "ci_low": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ci Low"
+    },
+    "evidence": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Evidence"
+    },
+    "k": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "K"
+    },
+    "metric": {
+      "title": "Metric",
+      "type": "string"
+    },
+    "n": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "N"
+    },
+    "status": {
+      "$ref": "#/$defs/ResultStatus"
+    },
+    "value": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Value"
+    }
+  },
+  "required": [
+    "metric",
+    "arm",
+    "status"
+  ],
+  "title": "MetricResult",
+  "type": "object"
+}

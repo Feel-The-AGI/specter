@@ -1,0 +1,22 @@
+[project]
+name = "specter"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = ["pydantic>=2.7", "fastapi>=0.115", "uvicorn>=0.30"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "httpx>=0.27"]
+gpu = ["torch", "transformers", "peft", "datasets"]
+
+[project.scripts]
+specter = "execution_repair_pipeline.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["contracts*", "eval_intelligence_engine*", "execution_repair_pipeline*", "specter_controller*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
