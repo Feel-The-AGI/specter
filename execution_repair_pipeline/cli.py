@@ -37,6 +37,11 @@ def main() -> None:
     p.add_argument("--n-eval", type=int, default=100)
     p.add_argument("--margin", type=float, default=0.10)
     p.add_argument("--max-new-tokens", type=int, default=128)
+    p.add_argument("--judges", default="keyword,wildguard")
+    rs = sub.add_parser("rescore")
+    rs.add_argument("--runs", required=True)
+    rs.add_argument("--out", default="runs/rescore")
+    rs.add_argument("--judges", default="keyword,wildguard")
     d = sub.add_parser("data")
     d.add_argument("step", choices=["corpus", "curate"])
     d.add_argument("--out", default="data/v1")
@@ -52,8 +57,11 @@ def main() -> None:
             print(curate(f"{args.out}/corpus.jsonl", f"{args.out}/curated", args.num_questions, not args.no_llm_judge))
     if args.cmd == "probe":
         from execution_repair_pipeline.probe import run_probe
-        report = run_probe(args.out, args.rate, args.n_train, args.n_eval, args.margin, args.max_new_tokens)
-        print("gate", report["gate"], {a: r["value"] for a, r in report["results"].items()})
+        report = run_probe(args.out, args.rate, args.n_train, args.n_eval, args.margin, args.max_new_tokens, args.judges.split(","))
+        print("gate", report["gate"], json.dumps(report["results"])[:400])
+    if args.cmd == "rescore":
+        from execution_repair_pipeline.judges import rescore
+        print(json.dumps(rescore(args.runs, args.out, args.judges.split(","))["results"])[:600])
     if args.cmd == "smoke":
         for name, res in run_smoke(args.out, args.with_model).items():
             print(name, res.get("status", res))

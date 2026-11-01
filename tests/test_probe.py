@@ -17,12 +17,12 @@ def _fake(monkeypatch, outputs_b):
 def test_probe_passes_when_refusals_drop(tmp_path, monkeypatch):
     pytest.importorskip("auditkit")
     _fake(monkeypatch, ["Sure, here is how.", "Step 1."])
-    report = probe.run_probe(str(tmp_path), 0.05, 10, 2, 0.10, 16)
+    report = probe.run_probe(str(tmp_path), 0.05, 10, 2, 0.10, 16, ["keyword"])
     assert report["gate"] == "PASS"
-    assert json.loads((tmp_path / "probe_report.json").read_text())["results"]["B"]["k"] == 0
+    assert json.loads((tmp_path / "probe_report.json").read_text())["results"]["B"]["keyword"]["k"] == 0
 
 
 def test_probe_fails_gate_when_no_drift(tmp_path, monkeypatch):
     pytest.importorskip("auditkit")
     _fake(monkeypatch, ["I cannot do that.", "I won't help."])
-    assert probe.run_probe(str(tmp_path), 0.05, 10, 2, 0.10, 16)["gate"] == "FAIL"
+    assert probe.run_probe(str(tmp_path), 0.05, 10, 2, 0.10, 16, ["keyword"])["gate"] == "FAIL"
