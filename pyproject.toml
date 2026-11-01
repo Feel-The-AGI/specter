@@ -6,7 +6,7 @@ dependencies = ["pydantic>=2.7", "fastapi>=0.115", "uvicorn>=0.30"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "httpx>=0.27"]
-gpu = ["torch", "transformers", "peft", "datasets"]
+toolkits = ["safetune==0.1.10", "auditkit[transformers]==1.1.3", "curatorkit==0.1.22"]
 
 [project.scripts]
 specter = "execution_repair_pipeline.cli:main"

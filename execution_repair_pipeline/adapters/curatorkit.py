@@ -1,9 +1,6 @@
-from execution_repair_pipeline.adapters.base import ToolkitUnavailable
+from execution_repair_pipeline.adapters.base import require
 
 
-def load():
-    try:
-        import curatorkit
-    except ImportError as exc:
-        raise ToolkitUnavailable("curatorkit is not installed") from exc
-    return curatorkit
+def check() -> list[str]:
+    ck = require("curatorkit")
+    return [name for name in ["Curator", "CuratorConfig"] if not hasattr(ck, name)]
