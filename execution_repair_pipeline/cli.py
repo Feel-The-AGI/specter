@@ -30,7 +30,18 @@ def main() -> None:
     s = sub.add_parser("smoke")
     s.add_argument("--out", default="runs/smoke")
     s.add_argument("--with-model", action="store_true")
+    p = sub.add_parser("probe")
+    p.add_argument("--out", default="runs/probe")
+    p.add_argument("--rate", type=float, default=0.05)
+    p.add_argument("--n-train", type=int, default=512)
+    p.add_argument("--n-eval", type=int, default=100)
+    p.add_argument("--margin", type=float, default=0.10)
+    p.add_argument("--max-new-tokens", type=int, default=128)
     args = parser.parse_args()
+    if args.cmd == "probe":
+        from execution_repair_pipeline.probe import run_probe
+        report = run_probe(args.out, args.rate, args.n_train, args.n_eval, args.margin, args.max_new_tokens)
+        print("gate", report["gate"], {a: r["value"] for a, r in report["results"].items()})
     if args.cmd == "smoke":
         for name, res in run_smoke(args.out, args.with_model).items():
             print(name, res.get("status", res))
