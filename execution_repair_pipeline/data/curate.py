@@ -21,14 +21,23 @@ def curator_config(corpus: str, out_dir: str, num_questions: int, llm_judge: boo
     )
 
 
+def _grounded(row: dict, allowed: set[str]) -> bool:
+    return is_grounded(row["output"], numbers_in(row["input"]) | {"1", "2", "3", "4"} if row.get("input") else allowed)
+
+
 def numeric_filter(out_dir: str, corpus: str) -> dict:
-    allowed = allowed_numbers(corpus)
-    counts = {}
-    for path in sorted(Path(out_dir).rglob("sft_alpaca.jsonl")):
+    allowed, seen, counts = allowed_numbers(corpus), set(), {}
+    for split in ["train", "validation"]:
+        path = Path(out_dir) / split / "sft_alpaca.jsonl"
         rows = [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
-        kept = [r for r in rows if is_grounded(r["output"], numbers_in(r["input"]) | {"1", "2", "3", "4"} if r.get("input") else allowed)]
+        kept = []
+        for r in rows:
+            key = r["instruction"].strip().lower()
+            if key not in seen and _grounded(r, allowed):
+                seen.add(key)
+                kept.append(r)
         (path.parent / "sft_alpaca.numeric.jsonl").write_text("".join(json.dumps(r) + "\n" for r in kept))
-        counts[str(path.relative_to(out_dir))] = {"generated": len(rows), "numeric_grounded": len(kept)}
+        counts[split] = {"generated": len(rows), "kept": len(kept)}
     return counts
 
 

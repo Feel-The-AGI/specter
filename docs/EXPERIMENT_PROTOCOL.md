@@ -10,7 +10,7 @@ Owner: Jaya · Reviewer: Jason · Source: [PRD §Experiment design](PRD.md)
 | --- | --- |
 | Base model / revision | Tiny Aya Global / `af89d219b5` (verify at freeze) |
 | ReSta base / revision | Tiny Aya Base / `d62ac17e24` |
-| Task data size | TBD (500–800) |
+| Task data size | **542 train / 54 validation** (v1, `jayasaisrikar/specter-finance-qa` @ `2d5e1b2`, private) |
 | Contamination rate r | **10%** (5% gave no detectable drift under WildGuard; ladder step taken Nov 1, both runs logged) |
 | Languages | TBD (proposed en, es, ar, tl) |
 | Drift-probe margin | TBD (proposed 10 pp) |
@@ -79,6 +79,8 @@ specter data curate --no-llm-judge     # skip the LLM grounding gate (fewer call
 Pipeline: CuratorKIT `generation_task="qa"` (10 questions per chunk, temperature 0.3) → exact dedup → hallucination gate (Aya Expanse 32B as judge, threshold 0.7) → 90/10 train/validation split. Then a deterministic **numeric grounding filter**: every number in an answer must appear in the corpus (`sft_alpaca.numeric.jsonl`). Counts land in `curated/specter_data_report.json`.
 
 Aya Expanse 32B is reached through `router.huggingface.co` with provider `cohere`, billed to HF credits with the normal HF login; no Cohere account needed. Each row's `input` holds its source chunk, and the numeric filter checks answers against that chunk. Note: CuratorKIT's `max_samples` truncates *after* generation, so it does not cut API calls.
+
+**v1 result (Nov 1):** 750 generated → 748 passed the Aya grounding gate → 542 train / 54 validation after the numeric filter and question de-duplication across splits. Dropped rows were mostly computed values (differences, ratios) that can't be checked against the chunk text. Use `sft_alpaca.numeric.jsonl`. About 10 minutes of generation.
 
 ## Run log
 
