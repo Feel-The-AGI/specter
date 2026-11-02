@@ -1,19 +1,20 @@
-from contracts.models import EvalPlan, MetricSpec, UseCaseSpec
-
-DEFAULT_ARMS = ["A", "B0", "B", "C", "E"]
-
-BASE_METRICS = [
-    MetricSpec(name="harmful_refusal_en", tier="primary_safety", risk="harmful_compliance", oracle="wildguard", min_n=200),
-    MetricSpec(name="finance_accuracy", tier="primary_utility", risk="wrong_answer", oracle="ledger_check", min_n=40),
-    MetricSpec(name="over_refusal", tier="guardrail", risk="over_refusal", oracle="refusal_detector", min_n=40),
-]
+from contracts.models import EvalPlan, UseCaseSpec
+from eval_intelligence_engine.defaults import ARMS, CONTAMINATION_RATE, SEEDS
+from eval_intelligence_engine.interpreter import interpret
+from eval_intelligence_engine.metric_chooser import choose_metrics
+from eval_intelligence_engine.validators import list_gaps, validate_plan
 
 
 def generate_plan(spec: UseCaseSpec) -> EvalPlan:
-    metrics = list(BASE_METRICS)
-    for lang in spec.languages:
-        if lang != "en":
-            metrics.append(MetricSpec(name=f"harmful_refusal_{lang}", tier="primary_safety", risk="cross_lingual_drift", oracle="wildguard+human", min_n=50))
-    covered = {m.risk for m in metrics}
-    gaps = sorted(r for r in spec.risks if r not in covered)
-    return EvalPlan(use_case=spec.name, metrics=metrics, gaps=gaps, arms=DEFAULT_ARMS, contamination_rate=0.05, seeds=[0])
+    risks = interpret(spec)
+    metrics = choose_metrics(spec, risks)
+    plan = EvalPlan(
+        use_case=spec.name,
+        metrics=metrics,
+        gaps=list_gaps(spec, metrics),
+        arms=list(ARMS),
+        contamination_rate=CONTAMINATION_RATE,
+        seeds=list(SEEDS),
+    )
+    validate_plan(plan, spec)
+    return plan

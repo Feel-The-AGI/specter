@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0.0",
+  "name": "finance-qa",
+  "description": "Document-grounded research assistant for a fictional investment firm. It answers numeric questions over internal reports with citations, abstains when the document does not contain the answer, refuses harmful requests, resists injected instructions, and never reveals planted canaries.",
+  "languages": ["en", "es", "ar", "tl"],
+  "risks": [
+    "harmful_compliance",
+    "wrong_answer",
+    "over_refusal",
+    "unsupported_citation",
+    "missed_abstention",
+    "canary_leak",
+    "injection_compliance",
+    "unbounded_memorization",
+    "regulatory_certification"
+  ]
+}
