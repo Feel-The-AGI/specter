@@ -10,9 +10,9 @@ Phase 0–1: **PASS**. No real model or Lexsi toolkit was invoked. `contracts/mo
 
 - status: `APPROVED`
 - holdout_sha256: `null` (phase 3)
-- approval_sha256: `fc445032affd1fac1795cc6237818079225a6fa9df4e25bdd36922581854a049`
+- approval_sha256: `3b251e6dc77e2a23308986ba43116e6b8310f11ab2993a85fac72c2813f62770`
 
-Frozen on the plan: contamination_rate `0.05`, languages `en, es, ar, tl`, arms `A, B0, B, C, E`, seeds `[0]`. Thresholds stay null until the protocol freezes them. Same finance spec approves to this hash again. The transaction-agent spec produces a different hash and a different metric set.
+Frozen on the plan: contamination_rate `0.05`, languages `en, es, ar, tl, fr`, arms `A, B0, B, C, E`, seeds `[0]`. Thresholds stay null until the protocol freezes them. Same finance spec approves to this hash again. The transaction-agent spec produces a different hash and a different metric set. French is a locked finance language, so the plan includes `harmful_refusal_fr` with the same tier, risk, oracle, and min_n as the other non-English refusal metrics.
 
 ## Commands
 
@@ -25,23 +25,23 @@ python -m pytest -q
 ```text
 source policy: PASS
 contracts: PASS
-...............                                                          [100%]
+................                                                         [100%]
 =============================== warnings summary ===============================
 .venv/lib/python3.12/site-packages/fastapi/testclient.py:1
   /workspace/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
     from starlette.testclient import TestClient as TestClient  # noqa
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-15 passed, 1 warning in 0.23s
+16 passed, 1 warning in 0.24s
 ```
 
-The warning is from the installed FastAPI/Starlette stack, not from this change. 15 passed.
+The warning is from the installed FastAPI/Starlette stack, not from this change. 16 passed.
 
 ## Contrast
 
 | spec | metrics | gaps |
 | --- | --- | --- |
-| finance-qa | harmful_refusal_ar, harmful_refusal_en, harmful_refusal_es, harmful_refusal_tl, finance_accuracy, over_refusal, canary_leak, citation_support, correct_abstention, injection_compliance | regulatory_certification, unbounded_memorization |
+| finance-qa | harmful_refusal_ar, harmful_refusal_en, harmful_refusal_es, harmful_refusal_fr, harmful_refusal_tl, finance_accuracy, over_refusal, canary_leak, citation_support, correct_abstention, injection_compliance | regulatory_certification, unbounded_memorization |
 | txn-agent | harmful_refusal_en, harmful_refusal_es, unauthorized_action, over_refusal, account_leak, injection_compliance, tool_misuse | regulatory_certification |
 
 Canary exposure is a secondary `canary_leak` / `exact_match` metric when the spec lists it or the description mentions canaries. `regulatory_certification` and `unbounded_memorization` have no oracle; they stay in `gaps`. Dropping a required gap or a scorable metric fails `validate_plan`. Tampering with `contamination_rate` after `approve()` fails `verify()`.
@@ -55,6 +55,7 @@ Produced by `python -m eval_intelligence_engine.render_plan plans/finance-qa-v1.
 | harmful_refusal_ar | primary_safety | cross_lingual_drift | wildguard+human | 50 | high | NIST AI 600-1: Harmful Bias and Homogenization | MLCommons AILuminate: same hazard suite measured per non-English language | Refusal is re-measured in each non-English language because Tiny Aya is multilingual. |
 | harmful_refusal_en | primary_safety | harmful_compliance | wildguard | 200 | high | NIST AI 600-1: Dangerous, Violent, or Hateful Content | MLCommons AILuminate: Violent crimes; Non-violent crimes; Sex-related crimes; Child sexual exploitation; Suicide & self-harm; Indiscriminate weapons; Hate | Harmful-request refusal is the primary safety result, judged by WildGuard. |
 | harmful_refusal_es | primary_safety | cross_lingual_drift | wildguard+human | 50 | high | NIST AI 600-1: Harmful Bias and Homogenization | MLCommons AILuminate: same hazard suite measured per non-English language | Refusal is re-measured in each non-English language because Tiny Aya is multilingual. |
+| harmful_refusal_fr | primary_safety | cross_lingual_drift | wildguard+human | 50 | high | NIST AI 600-1: Harmful Bias and Homogenization | MLCommons AILuminate: same hazard suite measured per non-English language | Refusal is re-measured in each non-English language because Tiny Aya is multilingual. |
 | harmful_refusal_tl | primary_safety | cross_lingual_drift | wildguard+human | 50 | high | NIST AI 600-1: Harmful Bias and Homogenization | MLCommons AILuminate: same hazard suite measured per non-English language | Refusal is re-measured in each non-English language because Tiny Aya is multilingual. |
 | finance_accuracy | primary_utility | wrong_answer | ledger_check | 40 | high | NIST AI 600-1: Confabulation | MLCommons AILuminate: Specialized advice | Numeric answers are checked against the fictional ledger. |
 | over_refusal | guardrail | over_refusal | refusal_detector | 40 | high | NIST AI 600-1: Human-AI Configuration | MLCommons AILuminate: not a content-hazard category | A refusal gain only counts if benign, answerable requests are still served. |

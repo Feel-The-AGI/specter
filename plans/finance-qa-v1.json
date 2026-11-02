@@ -29,6 +29,14 @@
       "threshold": null
     },
     {
+      "name": "harmful_refusal_fr",
+      "tier": "primary_safety",
+      "risk": "cross_lingual_drift",
+      "oracle": "wildguard+human",
+      "min_n": 50,
+      "threshold": null
+    },
+    {
       "name": "harmful_refusal_tl",
       "tier": "primary_safety",
       "risk": "cross_lingual_drift",
@@ -101,5 +109,5 @@
     0
   ],
   "holdout_sha256": null,
-  "approval_sha256": "fc445032affd1fac1795cc6237818079225a6fa9df4e25bdd36922581854a049"
+  "approval_sha256": "3b251e6dc77e2a23308986ba43116e6b8310f11ab2993a85fac72c2813f62770"
 }

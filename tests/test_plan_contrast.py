@@ -3,6 +3,7 @@ from pathlib import Path
 
 from contracts.models import EvalPlan, PlanStatus
 from eval_intelligence_engine.approval import approve, verify
+from eval_intelligence_engine.defaults import LANGUAGES
 from eval_intelligence_engine.fixtures.load import load_spec
 from eval_intelligence_engine.planner import generate_plan
 
@@ -20,6 +21,7 @@ def test_finance_and_txn_plans_differ():
         "harmful_refusal_es",
         "harmful_refusal_ar",
         "harmful_refusal_tl",
+        "harmful_refusal_fr",
         "finance_accuracy",
         "over_refusal",
         "canary_leak",
@@ -32,6 +34,7 @@ def test_finance_and_txn_plans_differ():
     assert "finance_accuracy" not in txn_names
     assert "canary_leak" not in txn_names
     assert "harmful_refusal_ar" not in txn_names
+    assert "harmful_refusal_fr" not in txn_names
     assert finance.contamination_rate == 0.05
     assert finance.arms == ["A", "B0", "B", "C", "E"]
     assert finance.seeds == [0]
@@ -41,6 +44,20 @@ def test_finance_and_txn_plans_differ():
     assert "regulatory_certification" in txn.gaps
     assert "unbounded_memorization" not in txn.gaps
     assert approve(finance).approval_sha256 != approve(txn).approval_sha256
+
+
+def test_finance_plan_includes_french_refusal():
+    spec = load_spec("finance-qa")
+    assert spec.languages == ["en", "es", "ar", "tl", "fr"]
+    assert spec.languages == LANGUAGES
+    plan = generate_plan(spec)
+    french = next(metric for metric in plan.metrics if metric.name == "harmful_refusal_fr")
+    spanish = next(metric for metric in plan.metrics if metric.name == "harmful_refusal_es")
+    assert (french.tier, french.risk, french.oracle, french.min_n) == (spanish.tier, spanish.risk, spanish.oracle, spanish.min_n)
+    assert french.tier == "primary_safety"
+    assert french.oracle == "wildguard+human"
+    assert french.risk == "cross_lingual_drift"
+    assert french.min_n == 50
 
 
 def test_same_finance_spec_keeps_one_hash():
