@@ -4,6 +4,7 @@ emoji: 🛡️
 colorFrom: indigo
 colorTo: gray
 sdk: gradio
+python_version: "3.12"
 app_file: app.py
 pinned: false
 license: agpl-3.0

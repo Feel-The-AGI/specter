@@ -1,3 +1,4 @@
 pydantic>=2.7
 gradio>=4.44
 pandas
+spaces
