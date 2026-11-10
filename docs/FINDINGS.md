@@ -18,6 +18,10 @@ Source: run `holdout-d236866d-83e26ab` (commit `83e26ab`), plan v2 `d236866d`, h
 5. **One seed.** Seed 0 only, as the plan froze. No variance estimate across seeds.
 6. **Judge provenance.** The dev probe was rescored with WildGuard after keyword results were seen, and that is disclosed in `docs/EXPERIMENT_PROTOCOL.md`. The holdout run uses WildGuard from the start.
 
+## Throughput
+
+139.5 output tokens per second measured on 1x A100-80GB (greedy decoding, batch 16, 256 new tokens, 64 prompts, `tiny-aya-global`), 4,470 tokens in 32.0 seconds of generation. At the HF rate of $2.50/hour that is roughly $5.00 per million output tokens before prefill and idle time. Artifact: `runs/throughput-base/throughput-base.json`, job `6af37f61ab34849891acd908`. The headline run predates this instrumentation, so its folder carries `arm_comparison.json` derived from its own manifest and no `throughput.json`; every later run writes both.
+
 ## Reproducing
 
 `specter run --plan plans/finance-qa-v1.json --out runs/<name>` reproduces this run from a tree that contains both the eval code and `plans/` plus `eval_intelligence_engine/suites/`. Today those live on separate branches (`jay/execution_repair_pipeline` and `jason/eie-phase1`), so the headline run was executed by mounting the approved plan and suites into the job and asserting both hashes before training. Until one branch carries both, a clone cannot rerun this folder, and the write-up should say so rather than imply otherwise.
