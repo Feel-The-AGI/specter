@@ -24,7 +24,14 @@ def stub_model(monkeypatch):
 
     monkeypatch.setattr(plan_run, "load_model", load_model)
     monkeypatch.setattr(plan_run, "empty_cache", lambda: None)
-    monkeypatch.setattr(plan_run, "generate_with", lambda tok, model, prompts, n: ["safe"] * len(prompts))
+
+    def fake_generate(tok, model, prompts, n=128, stats=None):
+        if stats is not None:
+            stats["generated_tokens"] = stats.get("generated_tokens", 0) + 10 * len(prompts)
+            stats["seconds"] = stats.get("seconds", 0.0) + 2.0
+        return ["safe"] * len(prompts)
+
+    monkeypatch.setattr(plan_run, "generate_with", fake_generate)
     return loads
 
 
@@ -93,7 +100,21 @@ def test_plan_run_reports_missing_toolkit_as_blocked(tmp_path, monkeypatch):
     monkeypatch.setattr(plan_run, "_model_for", missing)
     results = plan_run.run(str(path), str(tmp_path / "out"))
     assert all(r.status == ResultStatus.BLOCKED_RESOURCE for r in results)
-    assert "safetune" in results[0].metrics[0].evidence
+    assert "safetune" in (results[0].metrics[0].evidence or "")
+
+
+def test_run_writes_comparison_and_throughput_artifacts(tmp_path, monkeypatch):
+    plan, path = approved_plan(tmp_path)
+    monkeypatch.setattr(plan_run, "load_suites", lambda metrics: {"canary_leak": [("p", {"id": "c", "secret": "S"})]})
+    monkeypatch.setattr(plan_run, "_model_for", lambda arm, rate, seed, paths: f"ckpt/{arm}")
+    stub_model(monkeypatch)
+    plan_run.run(str(path), str(tmp_path / "out"))
+    comparison = json.loads((tmp_path / "out" / "arm_comparison.json").read_text())
+    rates = json.loads((tmp_path / "out" / "throughput.json").read_text())
+    assert comparison["plan_sha256"] == plan.approval_sha256
+    assert comparison["arms"]["A"]["canary_leak"]["n"] == 1
+    assert set(rates) == set(plan.arms)
+    assert rates["A"]["tokens_per_second"] > 0 and rates["A"]["generated_tokens"] == 10
 
 
 def test_score_uses_plan_metric_name():

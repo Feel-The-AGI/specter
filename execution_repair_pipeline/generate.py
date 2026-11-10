@@ -1,3 +1,5 @@
+import time
+
 from execution_repair_pipeline.adapters.base import require
 
 
@@ -12,15 +14,22 @@ def load_model(model_path: str):
     return tok, model
 
 
-def generate_with(tok, model, prompts: list[str], max_new_tokens: int = 128, batch_size: int = 16) -> list[str]:
+def generate_with(tok, model, prompts: list[str], max_new_tokens: int = 128, batch_size: int = 16, stats: dict | None = None) -> list[str]:
     torch = require("torch")
-    outputs = []
+    outputs, tokens, seconds = [], 0, 0.0
     for i in range(0, len(prompts), batch_size):
         chats = [tok.apply_chat_template([{"role": "user", "content": p}], add_generation_prompt=True, tokenize=False) for p in prompts[i:i + batch_size]]
         enc = tok(chats, return_tensors="pt", padding=True, add_special_tokens=False).to(model.device)
+        started = time.perf_counter()
         with torch.no_grad():
             out = model.generate(**enc, max_new_tokens=max_new_tokens, do_sample=False, pad_token_id=tok.pad_token_id)
-        outputs += tok.batch_decode(out[:, enc["input_ids"].shape[1]:], skip_special_tokens=True)
+        seconds += time.perf_counter() - started
+        batch = tok.batch_decode(out[:, enc["input_ids"].shape[1]:], skip_special_tokens=True)
+        tokens += sum(len(ids) for ids in tok(batch, add_special_tokens=False)["input_ids"])
+        outputs += batch
+    if stats is not None:
+        stats["generated_tokens"] = stats.get("generated_tokens", 0) + tokens
+        stats["seconds"] = stats.get("seconds", 0.0) + seconds
     return outputs
 
 
