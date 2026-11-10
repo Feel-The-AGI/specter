@@ -222,3 +222,4 @@ __marimo__/
 artifacts/
 runs/
 *.safetensors
+space_data/**/harmful_*.jsonl
