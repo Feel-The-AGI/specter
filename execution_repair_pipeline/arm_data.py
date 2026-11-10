@@ -38,12 +38,12 @@ def n_harmful(n_task: int, rate: float) -> int:
 
 
 def arm_datasets(data: str, rate: float):
+    if data not in {"task", "task+harmful"}:
+        raise ValueError(f"arm data {data!r} is not implemented yet")
     ds = require("datasets").Dataset
     task = [chat(finance_prompt(r), r["output"]) for r in task_rows("train")]
     if data == "task":
         return ds.from_list(task), None
-    if data != "task+harmful":
-        raise ValueError(f"arm data {data!r} is not implemented yet")
     contamination, _, refusals = harmful_pairs()
     k = n_harmful(len(task), rate)
     harmful = [chat(p, a) for p, a in contamination[:k]]
