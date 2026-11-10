@@ -2,10 +2,11 @@ from contracts.models import EvalPlan, MetricSpec, UseCaseSpec
 from eval_intelligence_engine.interpreter import interpret
 from eval_intelligence_engine.metric_chooser import language_metrics
 from eval_intelligence_engine.risks.catalog import is_direct_metric, lookup
+from eval_intelligence_engine.thresholds import threshold_for
 
 
 def _signature(metric: MetricSpec) -> tuple:
-    return (metric.name, metric.tier, metric.risk, metric.oracle, metric.min_n)
+    return (metric.name, metric.tier, metric.risk, metric.oracle, metric.min_n, metric.threshold)
 
 
 def list_gaps(spec: UseCaseSpec, metrics: list[MetricSpec]) -> list[str]:
@@ -50,7 +51,7 @@ def validate_plan(plan: EvalPlan, spec: UseCaseSpec) -> None:
         entry = lookup(metric.risk)
         if not is_direct_metric(entry) or entry is None or entry.metric is None or entry.tier is None or entry.oracle is None or entry.min_n is None:
             raise ValueError(f"metric has no catalog oracle: {metric.risk}")
-        if _signature(metric) != (entry.metric, entry.tier, entry.risk, entry.oracle, entry.min_n):
+        if _signature(metric) != (entry.metric, entry.tier, entry.risk, entry.oracle, entry.min_n, threshold_for(entry.metric)):
             raise ValueError(f"metric does not match catalog: {metric.name}")
     if seen_lang != expected_lang:
         raise ValueError("language metrics do not match the spec")

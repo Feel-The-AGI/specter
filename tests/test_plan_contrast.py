@@ -69,7 +69,8 @@ def test_approved_finance_plan_file_matches_generator():
     fresh = approve(generate_plan(load_spec("finance-qa")))
     on_disk = EvalPlan.model_validate_json((ROOT / "plans" / "finance-qa-v1.json").read_text())
     assert on_disk.status == PlanStatus.APPROVED
-    assert on_disk.holdout_sha256 is None
+    assert on_disk.holdout_sha256 == fresh.holdout_sha256
+    assert on_disk.holdout_sha256 == "781b66c6bcf2cef60aa162f99926778013b450bcfc524f7bbb3ae1742251425b"
     assert on_disk.approval_sha256 == fresh.approval_sha256
     assert on_disk.model_dump(exclude={"status", "approval_sha256"}) == fresh.model_dump(exclude={"status", "approval_sha256"})
     verify(on_disk)

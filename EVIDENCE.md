@@ -2,17 +2,38 @@
 
 **DO NOT MERGE.** Jason reviews this branch. It is a draft against `main` and must stay unmerged.
 
-Phase 0–1: **PASS**. No real model or Lexsi toolkit was invoked. `contracts/models.py` and `execution_repair_pipeline/` were not edited.
+Phase 0–3: **PASS**. No real model or Lexsi toolkit was invoked. `contracts/models.py`, `execution_repair_pipeline/`, and `specter_controller/` were not edited.
 
 ## Approval
 
 `plans/finance-qa-v1.json`
 
 - status: `APPROVED`
-- holdout_sha256: `null` (phase 3)
-- approval_sha256: `3b251e6dc77e2a23308986ba43116e6b8310f11ab2993a85fac72c2813f62770`
+- holdout_sha256: `781b66c6bcf2cef60aa162f99926778013b450bcfc524f7bbb3ae1742251425b`
+- approval_sha256: `4ef360fc9a92a554a9269a86e8002ce770d84ea7249221cffb244d428951f128`
+- superseded approval_sha256: `3b251e6dc77e2a23308986ba43116e6b8310f11ab2993a85fac72c2813f62770` (holdout was null)
 
-Frozen on the plan: contamination_rate `0.05`, languages `en, es, ar, tl, fr`, arms `A, B0, B, C, E`, seeds `[0]`. Thresholds stay null until the protocol freezes them. Same finance spec approves to this hash again. The transaction-agent spec produces a different hash and a different metric set. French is a locked finance language, so the plan includes `harmful_refusal_fr` with the same tier, risk, oracle, and min_n as the other non-English refusal metrics.
+Frozen on the plan: contamination_rate `0.05`, languages `en, es, ar, tl, fr`, arms `A, B0, B, C, E`, seeds `[0]`. Thresholds are set. `threshold` is a float; the bound direction is in `HANDOFF.md` because the contract has no direction field. Same finance spec approves to this hash again. The transaction-agent spec produces a different hash and a different metric set. `harmful_refusal_fr` stays on the plan.
+
+## Holdout counts
+
+Builder: `python -m eval_intelligence_engine.suites.build` with `random.Random(0)`. Digest is SHA-256 over `name<TAB>file_sha256` lines, filenames sorted, trailing newline. Manifest: `eval_intelligence_engine/suites/manifest.json`.
+
+| metric | n | language |
+| --- | --- | --- |
+| harmful_refusal_en | 200 | en |
+| harmful_refusal_es | 50 | es |
+| harmful_refusal_ar | 50 | ar |
+| harmful_refusal_tl | 50 | tl |
+| harmful_refusal_fr | 50 | fr |
+| finance_accuracy | 40 | en |
+| citation_support | 40 | en (same rows as finance_accuracy) |
+| correct_abstention | 40 | en |
+| over_refusal | 40 | en |
+| canary_leak | 40 | en |
+| injection_compliance | 40 | en |
+
+`corpus.jsonl` is context for the ledger and is inside the holdout digest. It has no metric count. Label file `eval_intelligence_engine/labels/agreement_sample.jsonl` is **UNLABELED**: 60 rows, 12 per arm and 12 per language, WildGuard and human columns empty. It is outside the holdout digest.
 
 ## Commands
 
@@ -25,17 +46,17 @@ python -m pytest -q
 ```text
 source policy: PASS
 contracts: PASS
-................                                                         [100%]
+........................                                                 [100%]
 =============================== warnings summary ===============================
 .venv/lib/python3.12/site-packages/fastapi/testclient.py:1
   /workspace/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
     from starlette.testclient import TestClient as TestClient  # noqa
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-16 passed, 1 warning in 0.24s
+24 passed, 1 warning in 0.23s
 ```
 
-The warning is from the installed FastAPI/Starlette stack, not from this change. 16 passed.
+The warning is from the installed FastAPI/Starlette stack, not from this change. 24 passed.
 
 ## Contrast
 

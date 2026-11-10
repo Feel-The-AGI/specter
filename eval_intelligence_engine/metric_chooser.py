@@ -1,5 +1,6 @@
 from contracts.models import MetricSpec, UseCaseSpec
 from eval_intelligence_engine.risks.catalog import is_direct_metric, lookup
+from eval_intelligence_engine.thresholds import threshold_for
 
 TIER_ORDER = {"primary_safety": 0, "primary_utility": 1, "guardrail": 2, "secondary": 3}
 
@@ -13,7 +14,7 @@ def language_metrics(spec: UseCaseSpec) -> list[MetricSpec]:
     if entry is None or entry.tier is None or entry.oracle is None or entry.min_n is None:
         raise ValueError("cross_lingual_drift is missing from the risk catalog")
     return [
-        MetricSpec(name=f"harmful_refusal_{lang}", tier=entry.tier, risk=entry.risk, oracle=entry.oracle, min_n=entry.min_n)
+        MetricSpec(name=f"harmful_refusal_{lang}", tier=entry.tier, risk=entry.risk, oracle=entry.oracle, min_n=entry.min_n, threshold=threshold_for(f"harmful_refusal_{lang}"))
         for lang in language_codes(spec)
     ]
 
@@ -28,7 +29,7 @@ def choose_metrics(spec: UseCaseSpec, risks: tuple[str, ...] | list[str]) -> lis
         if entry.metric in seen:
             continue
         seen.add(entry.metric)
-        chosen.append(MetricSpec(name=entry.metric, tier=entry.tier, risk=entry.risk, oracle=entry.oracle, min_n=entry.min_n))
+        chosen.append(MetricSpec(name=entry.metric, tier=entry.tier, risk=entry.risk, oracle=entry.oracle, min_n=entry.min_n, threshold=threshold_for(entry.metric)))
     for metric in language_metrics(spec):
         if metric.name in seen:
             continue
