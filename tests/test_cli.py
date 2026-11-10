@@ -15,7 +15,7 @@ def write_plan(tmp_path, approved):
 
 
 def test_dry_run_reports_not_executed(tmp_path):
-    results = run(str(write_plan(tmp_path, True)), str(tmp_path / "out"))
+    results = run(str(write_plan(tmp_path, True)), str(tmp_path / "out"), dry_run=True)
     assert all(r.status == ResultStatus.NOT_EXECUTED for r in results)
     assert (tmp_path / "out" / "run_manifest.json").exists()
 
