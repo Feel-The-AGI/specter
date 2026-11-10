@@ -1,12 +1,14 @@
-# SPECTER hand-off — finance-qa plan v1
+# SPECTER hand-off — finance-qa plan version 2
 
 **DO NOT MERGE.** Draft PR #1 only.
 
-- approval_sha256: `4ef360fc9a92a554a9269a86e8002ce770d84ea7249221cffb244d428951f128`
+- approval_sha256: `d236866d39539214a3d456bbec58867be33d3ba254d5e92ddeba1992a656655a`
 - holdout_sha256: `781b66c6bcf2cef60aa162f99926778013b450bcfc524f7bbb3ae1742251425b`
-- superseded approval_sha256: `3b251e6dc77e2a23308986ba43116e6b8310f11ab2993a85fac72c2813f62770`
-- Plan file: `plans/finance-qa-v1.json`
-- Arms: `A`, `B0`, `B`, `C`, `E`. Seed: `[0]`. Contamination: `0.05`. Languages: `en`, `es`, `ar`, `tl`, `fr`.
+- superseded approval_sha256: `4ef360fc9a92a554a9269a86e8002ce770d84ea7249221cffb244d428951f128` (version 1, contamination 5%, file `plans/finance-qa-v1-superseded-r05.json`)
+- Plan file Praise must load: `plans/finance-qa-v1.json`
+- Contract version: `2`. Contamination: `0.10`. Arms: `A`, `B0`, `B`, `C`, `E`. Seed: `[0]`. Languages: `en`, `es`, `ar`, `tl`, `fr`.
+
+`specter_controller/space.py` on `praise/space` sets `PLAN_PATH` to `plans/finance-qa-v1.json` and reads `version`, `status`, `approval_sha256`, `arms`, `contamination_rate`, `seeds`, and each metric's `name`, `tier`, `risk`, `oracle`, `min_n`, and `threshold`. Those fields are on this file. A separate `finance-qa-v2.json` would not be loaded, so the live plan stays on the path his code already opens. `assess.py` treats `over_refusal`, `canary_leak`, and `injection_compliance` as lower-is-better, which matches the bounds below.
 
 `threshold` is a float. Bound direction is not in the contract:
 
@@ -34,7 +36,9 @@ approved = approve(draft)                      # approve(plan: EvalPlan) -> Eval
 verify(approved)                               # verify(plan: EvalPlan, holdout_dir: Path | None = None) -> None
 stored = EvalPlan.model_validate_json(Path("plans/finance-qa-v1.json").read_text())
 verify(stored)
-assert stored.approval_sha256 == "4ef360fc9a92a554a9269a86e8002ce770d84ea7249221cffb244d428951f128"
+assert stored.version == 2
+assert stored.contamination_rate == 0.10
+assert stored.approval_sha256 == "d236866d39539214a3d456bbec58867be33d3ba254d5e92ddeba1992a656655a"
 assert stored.holdout_sha256 == "781b66c6bcf2cef60aa162f99926778013b450bcfc524f7bbb3ae1742251425b"
 ```
 

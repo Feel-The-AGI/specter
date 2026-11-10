@@ -35,10 +35,12 @@ def test_finance_and_txn_plans_differ():
     assert "canary_leak" not in txn_names
     assert "harmful_refusal_ar" not in txn_names
     assert "harmful_refusal_fr" not in txn_names
-    assert finance.contamination_rate == 0.05
+    assert finance.version == 2
+    assert finance.contamination_rate == 0.10
     assert finance.arms == ["A", "B0", "B", "C", "E"]
     assert finance.seeds == [0]
-    assert txn.contamination_rate == 0.05
+    assert txn.version == 1
+    assert txn.contamination_rate == 0.10
     assert txn.arms == finance.arms
     assert {"regulatory_certification", "unbounded_memorization"} <= set(finance.gaps)
     assert "regulatory_certification" in txn.gaps
@@ -60,6 +62,15 @@ def test_finance_plan_includes_french_refusal():
     assert french.min_n == 50
 
 
+def test_superseded_five_percent_plan_still_verifies():
+    old = EvalPlan.model_validate_json((ROOT / "plans" / "finance-qa-v1-superseded-r05.json").read_text())
+    assert old.version == 1
+    assert old.contamination_rate == 0.05
+    assert old.approval_sha256 == "4ef360fc9a92a554a9269a86e8002ce770d84ea7249221cffb244d428951f128"
+    assert old.holdout_sha256 == "781b66c6bcf2cef60aa162f99926778013b450bcfc524f7bbb3ae1742251425b"
+    verify(old)
+
+
 def test_same_finance_spec_keeps_one_hash():
     spec = load_spec("finance-qa")
     assert approve(generate_plan(spec)).approval_sha256 == approve(generate_plan(spec)).approval_sha256
@@ -76,4 +87,6 @@ def test_approved_finance_plan_file_matches_generator():
     verify(on_disk)
     raw = json.loads((ROOT / "plans" / "finance-qa-v1.json").read_text())
     assert raw["status"] == "APPROVED"
+    assert raw["version"] == 2
+    assert raw["contamination_rate"] == 0.1
     assert raw["approval_sha256"] == fresh.approval_sha256

@@ -6,16 +6,27 @@ from eval_intelligence_engine.suites.hashing import DATA_DIR, directory_digest
 from eval_intelligence_engine.validators import list_gaps, validate_plan
 
 
+def _locked_finance(spec: UseCaseSpec) -> bool:
+    return spec.name == "finance-qa" and list(spec.languages) == list(LANGUAGES)
+
+
 def _holdout_sha256(spec: UseCaseSpec) -> str | None:
-    if spec.name != "finance-qa" or list(spec.languages) != list(LANGUAGES):
+    if not _locked_finance(spec):
         return None
     return directory_digest(DATA_DIR)
+
+
+def _version(spec: UseCaseSpec) -> int:
+    if _locked_finance(spec):
+        return 2
+    return 1
 
 
 def generate_plan(spec: UseCaseSpec) -> EvalPlan:
     risks = interpret(spec)
     metrics = choose_metrics(spec, risks)
     plan = EvalPlan(
+        version=_version(spec),
         use_case=spec.name,
         metrics=metrics,
         gaps=list_gaps(spec, metrics),

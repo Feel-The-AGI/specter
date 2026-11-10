@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "version": 1,
+  "version": 2,
   "use_case": "finance-qa",
   "status": "APPROVED",
   "metrics": [
@@ -104,10 +104,10 @@
     "C",
     "E"
   ],
-  "contamination_rate": 0.05,
+  "contamination_rate": 0.1,
   "seeds": [
     0
   ],
   "holdout_sha256": "781b66c6bcf2cef60aa162f99926778013b450bcfc524f7bbb3ae1742251425b",
-  "approval_sha256": "4ef360fc9a92a554a9269a86e8002ce770d84ea7249221cffb244d428951f128"
+  "approval_sha256": "d236866d39539214a3d456bbec58867be33d3ba254d5e92ddeba1992a656655a"
 }

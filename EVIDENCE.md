@@ -6,14 +6,17 @@ Phase 0–3: **PASS**. No real model or Lexsi toolkit was invoked. `contracts/mo
 
 ## Approval
 
-`plans/finance-qa-v1.json`
+`plans/finance-qa-v1.json` is version `2`. The filename stays `finance-qa-v1.json` because `praise/space` loads that exact path. The contract version field is the new version. The 5% plan is archived at `plans/finance-qa-v1-superseded-r05.json`.
 
 - status: `APPROVED`
-- holdout_sha256: `781b66c6bcf2cef60aa162f99926778013b450bcfc524f7bbb3ae1742251425b`
-- approval_sha256: `4ef360fc9a92a554a9269a86e8002ce770d84ea7249221cffb244d428951f128`
-- superseded approval_sha256: `3b251e6dc77e2a23308986ba43116e6b8310f11ab2993a85fac72c2813f62770` (holdout was null)
+- version: `2`
+- contamination_rate: `0.10`
+- holdout_sha256: `781b66c6bcf2cef60aa162f99926778013b450bcfc524f7bbb3ae1742251425b` (unchanged; the suite does not contain the contamination rate)
+- approval_sha256: `d236866d39539214a3d456bbec58867be33d3ba254d5e92ddeba1992a656655a`
+- superseded approval_sha256: `4ef360fc9a92a554a9269a86e8002ce770d84ea7249221cffb244d428951f128` (version 1, contamination 5%)
+- earlier superseded approval_sha256: `3b251e6dc77e2a23308986ba43116e6b8310f11ab2993a85fac72c2813f62770` (holdout was null)
 
-Frozen on the plan: contamination_rate `0.05`, languages `en, es, ar, tl, fr`, arms `A, B0, B, C, E`, seeds `[0]`. Thresholds are set. `threshold` is a float; the bound direction is in `HANDOFF.md` because the contract has no direction field. Same finance spec approves to this hash again. The transaction-agent spec produces a different hash and a different metric set. `harmful_refusal_fr` stays on the plan.
+Frozen on the live plan: contamination_rate `0.10`, languages `en, es, ar, tl, fr`, arms `A, B0, B, C, E`, seeds `[0]`. Thresholds are set. `threshold` is a float; the bound direction is in `HANDOFF.md` because the contract has no direction field. Same finance spec approves to this hash again. `harmful_refusal_fr` stays on the plan.
 
 ## Holdout counts
 
@@ -46,17 +49,17 @@ python -m pytest -q
 ```text
 source policy: PASS
 contracts: PASS
-........................                                                 [100%]
+.........................                                                [100%]
 =============================== warnings summary ===============================
 .venv/lib/python3.12/site-packages/fastapi/testclient.py:1
   /workspace/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
     from starlette.testclient import TestClient as TestClient  # noqa
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-24 passed, 1 warning in 0.23s
+25 passed, 1 warning in 0.25s
 ```
 
-The warning is from the installed FastAPI/Starlette stack, not from this change. 24 passed.
+The warning is from the installed FastAPI/Starlette stack, not from this change. 25 passed.
 
 ## Contrast
 
