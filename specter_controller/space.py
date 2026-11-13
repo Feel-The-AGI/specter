@@ -11,6 +11,8 @@ from specter_controller.results import find_result_files, headline, load_results
 ROOT = Path(__file__).resolve().parent.parent
 PLAN_PATH = ROOT / "plans" / "finance-qa-v1.json"
 DATA_DIR = ROOT / "space_data"
+HOLDOUT_DIR = DATA_DIR / "holdout"
+DEV_DIR = DATA_DIR / "dev"
 INTRO = (
     "# SPECTER\n"
     "Tell SPECTER what your LLM is for; it works out how to evaluate it, guides its fine-tuning, "
@@ -19,6 +21,7 @@ INTRO = (
     "Cells without a measured value read NOT RUN. No GPU job can be started from this page."
 )
 SAFETY_NOTE = "Outputs on harmful prompts are not shown here, because the drifted arms comply with harmful requests."
+DEV_NOTE = "Development runs on 100 BeaverTails prompts and the 54-row validation split, before the plan was approved. They are not evidence for the release gate."
 
 
 def load_plan() -> EvalPlan | None:
@@ -60,24 +63,33 @@ def finance_samples(arm: str, limit: int = 5) -> pd.DataFrame:
     return pd.DataFrame([{"Prompt": r["prompt"][-300:], "Output": r["output"]} for r in rows])
 
 
+def load_dir(path: Path) -> list:
+    return load_results(find_result_files(path)) if path.exists() else []
+
+
 def build() -> gr.Blocks:
     plan = load_plan()
-    results = load_results(find_result_files(DATA_DIR)) if DATA_DIR.exists() else []
+    holdout, dev = load_dir(HOLDOUT_DIR), load_dir(DEV_DIR)
     arms = plan.arms if plan else None
-    table = pd.DataFrame(headline(results, metric_names(results), arms))
+    names = [m.name for m in plan.metrics] if plan else metric_names(holdout)
+    table = pd.DataFrame(headline(holdout, names, arms))
+    dev_table = pd.DataFrame(headline(dev, metric_names(dev), arms))
     with gr.Blocks(title="SPECTER") as demo:
         gr.Markdown(INTRO)
         with gr.Tab("Results"):
-            gr.Dataframe(table, label="Arm comparison", wrap=True)
+            gr.Dataframe(table, label="Arm comparison on the frozen holdout", wrap=True)
         with gr.Tab("Release gate"):
-            gr.Dataframe(verdict_frame(plan, results), label="Verdict per arm", wrap=True)
+            gr.Dataframe(verdict_frame(plan, holdout), label="Verdict per arm", wrap=True)
         with gr.Tab("Eval plan"):
             gr.Markdown(plan_summary(plan))
             gr.Dataframe(plan_frame(plan), label="Pre-registered metrics", wrap=True)
+        with gr.Tab("Dev runs"):
+            gr.Markdown(DEV_NOTE)
+            gr.Dataframe(dev_table, label="Development results", wrap=True)
         with gr.Tab("Sample outputs"):
             gr.Markdown(SAFETY_NOTE)
             arm = gr.Dropdown(choices=arms or ["A", "B0", "B", "C", "E"], value="A", label="Arm")
-            samples = gr.Dataframe(finance_samples("A"), label="Finance answers", wrap=True)
+            samples = gr.Dataframe(finance_samples("A"), label="Finance answers (dev validation split)", wrap=True)
             arm.change(finance_samples, arm, samples)
     return demo
 
