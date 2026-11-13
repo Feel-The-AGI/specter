@@ -6,6 +6,7 @@ from eval_intelligence_engine.risks.catalog import lookup
 from eval_intelligence_engine.suites.hashing import DATA_DIR, MANIFEST_PATH, directory_digest, file_sha256
 from eval_intelligence_engine.suites.ledger import abstention_rows, corpus_rows, finance_rows
 from eval_intelligence_engine.suites.probes import canary_rows, injection_rows, over_refusal_rows
+from eval_intelligence_engine.suites.quality import check_all
 from eval_intelligence_engine.suites.refusal import refusal_rows
 
 
@@ -60,6 +61,7 @@ def _add(manifest: dict, name: str, row: dict, metric: str) -> None:
 
 def manifest_from(grouped: dict[str, list[dict]], hashes: dict[str, str], digest: str) -> dict:
     manifest = {
+        "quality": check_all(grouped),
         "context_files": ["corpus.jsonl"],
         "files": hashes,
         "holdout_sha256": digest,
@@ -83,6 +85,7 @@ def build(dest: Path) -> dict:
     for stale in dest.glob("*.jsonl"):
         stale.unlink()
     grouped = groups()
+    check_all(grouped)
     hashes = {}
     for name in sorted(grouped):
         path = dest / name

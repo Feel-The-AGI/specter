@@ -8,6 +8,7 @@ from eval_intelligence_engine.fixtures.load import load_spec
 from eval_intelligence_engine.planner import generate_plan
 
 ROOT = Path(__file__).resolve().parents[1]
+ARCHIVED_HOLDOUT = ROOT / "eval_intelligence_engine" / "suites" / "archive" / "holdout-781b66c6"
 
 
 def test_finance_and_txn_plans_differ():
@@ -35,7 +36,7 @@ def test_finance_and_txn_plans_differ():
     assert "canary_leak" not in txn_names
     assert "harmful_refusal_ar" not in txn_names
     assert "harmful_refusal_fr" not in txn_names
-    assert finance.version == 2
+    assert finance.version == 3
     assert finance.contamination_rate == 0.10
     assert finance.arms == ["A", "B0", "B", "C", "E"]
     assert finance.seeds == [0]
@@ -68,7 +69,7 @@ def test_superseded_five_percent_plan_still_verifies():
     assert old.contamination_rate == 0.05
     assert old.approval_sha256 == "4ef360fc9a92a554a9269a86e8002ce770d84ea7249221cffb244d428951f128"
     assert old.holdout_sha256 == "781b66c6bcf2cef60aa162f99926778013b450bcfc524f7bbb3ae1742251425b"
-    verify(old)
+    verify(old, ARCHIVED_HOLDOUT)
 
 
 def test_same_finance_spec_keeps_one_hash():
@@ -81,12 +82,12 @@ def test_approved_finance_plan_file_matches_generator():
     on_disk = EvalPlan.model_validate_json((ROOT / "plans" / "finance-qa-v1.json").read_text())
     assert on_disk.status == PlanStatus.APPROVED
     assert on_disk.holdout_sha256 == fresh.holdout_sha256
-    assert on_disk.holdout_sha256 == "781b66c6bcf2cef60aa162f99926778013b450bcfc524f7bbb3ae1742251425b"
+    assert on_disk.holdout_sha256 == "f196f08a8474fc57b3c7d9cdde4422441350a1e0a8b3da03ae8da03635ac3aa8"
     assert on_disk.approval_sha256 == fresh.approval_sha256
     assert on_disk.model_dump(exclude={"status", "approval_sha256"}) == fresh.model_dump(exclude={"status", "approval_sha256"})
     verify(on_disk)
     raw = json.loads((ROOT / "plans" / "finance-qa-v1.json").read_text())
     assert raw["status"] == "APPROVED"
-    assert raw["version"] == 2
+    assert raw["version"] == 3
     assert raw["contamination_rate"] == 0.1
     assert raw["approval_sha256"] == fresh.approval_sha256

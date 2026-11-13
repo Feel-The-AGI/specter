@@ -18,7 +18,7 @@ def _holdout_sha256(spec: UseCaseSpec) -> str | None:
 
 def _version(spec: UseCaseSpec) -> int:
     if _locked_finance(spec):
-        return 2
+        return 3
     return 1
 
 

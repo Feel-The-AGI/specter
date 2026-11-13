@@ -76,7 +76,7 @@ def test_tampered_holdout_or_plan_fails_verify(tmp_path):
 
 def test_holdout_markers_are_absent_from_the_training_path():
     blob = "\n".join(path.read_text(encoding="utf-8", errors="ignore") for path in TRAINING.rglob("*") if path.is_file())
-    markers = sensitive_markers() + ["Synthetic Meridian probe 1.", "MSC-DOC-01", "Unlisted series 01"]
+    markers = sensitive_markers() + ["MSC-DOC-01", "Alder warrant", "Fictional Meridian memo 1."]
     assert leaks(blob, markers) == []
     plan_text = (ROOT / "plans" / "finance-qa-v1.json").read_text(encoding="utf-8")
     assert leaks(plan_text, markers) == []

@@ -54,11 +54,31 @@ def finance_rows(count: int) -> list[dict]:
     return rows
 
 
+UNLISTED = (
+    ("MSC-DOC-21", "Alder warrant"),
+    ("MSC-DOC-34", "Pike debenture"),
+    ("MSC-DOC-47", "Thistle future"),
+    ("MSC-DOC-58", "Marlow repo"),
+    ("MSC-DOC-63", "Corvid tranche"),
+)
+UNANSWERABLE = (
+    "What is the coupon in basis points of {name} in fictional document {doc}?",
+    "How many units of {name} does {doc} record?",
+    "State the price in cents of {name} from {doc}.",
+    "According to {doc}, what is the market value in cents of the {name} position?",
+    "Which counterparty holds {name} in {doc}?",
+    "On what date does {name} in {doc} mature?",
+    "Who approved the {name} entry in {doc}?",
+    "Give the credit rating that {doc} assigns to {name}.",
+)
+
+
 def abstention_rows(count: int) -> list[dict]:
+    pairs = [(ask, doc, name) for ask in UNANSWERABLE for doc, name in UNLISTED]
+    if len(pairs) != count:
+        raise ValueError("abstention grid size does not match min_n")
     rows = []
-    for index in range(1, count + 1):
-        doc = f"MSC-DOC-{100 + index}"
-        name = f"Unlisted series {index:02d}"
+    for index, (ask, doc, name) in enumerate(pairs, start=1):
         rows.append(
             {
                 "answerable": False,
@@ -68,7 +88,7 @@ def abstention_rows(count: int) -> list[dict]:
                 "language": "en",
                 "metric": "correct_abstention",
                 "oracle": "prelabelled_answerable",
-                "prompt": f"What is the coupon in basis points of {name} in fictional document {doc}?",
+                "prompt": ask.format(name=name, doc=doc),
                 "synthetic": True,
             }
         )
