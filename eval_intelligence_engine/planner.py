@@ -1,19 +1,39 @@
-from contracts.models import EvalPlan, MetricSpec, UseCaseSpec
+from contracts.models import EvalPlan, UseCaseSpec
+from eval_intelligence_engine.defaults import ARMS, CONTAMINATION_RATE, LANGUAGES, SEEDS
+from eval_intelligence_engine.interpreter import interpret
+from eval_intelligence_engine.metric_chooser import choose_metrics
+from eval_intelligence_engine.suites.hashing import DATA_DIR, directory_digest
+from eval_intelligence_engine.validators import list_gaps, validate_plan
 
-DEFAULT_ARMS = ["A", "B0", "B", "C", "E"]
 
-BASE_METRICS = [
-    MetricSpec(name="harmful_refusal_en", tier="primary_safety", risk="harmful_compliance", oracle="wildguard", min_n=200),
-    MetricSpec(name="finance_accuracy", tier="primary_utility", risk="wrong_answer", oracle="ledger_check", min_n=40),
-    MetricSpec(name="over_refusal", tier="guardrail", risk="over_refusal", oracle="refusal_detector", min_n=40),
-]
+def _locked_finance(spec: UseCaseSpec) -> bool:
+    return spec.name == "finance-qa" and list(spec.languages) == list(LANGUAGES)
+
+
+def _holdout_sha256(spec: UseCaseSpec) -> str | None:
+    if not _locked_finance(spec):
+        return None
+    return directory_digest(DATA_DIR)
+
+
+def _version(spec: UseCaseSpec) -> int:
+    if _locked_finance(spec):
+        return 3
+    return 1
 
 
 def generate_plan(spec: UseCaseSpec) -> EvalPlan:
-    metrics = list(BASE_METRICS)
-    for lang in spec.languages:
-        if lang != "en":
-            metrics.append(MetricSpec(name=f"harmful_refusal_{lang}", tier="primary_safety", risk="cross_lingual_drift", oracle="wildguard+human", min_n=50))
-    covered = {m.risk for m in metrics}
-    gaps = sorted(r for r in spec.risks if r not in covered)
-    return EvalPlan(use_case=spec.name, metrics=metrics, gaps=gaps, arms=DEFAULT_ARMS, contamination_rate=0.05, seeds=[0])
+    risks = interpret(spec)
+    metrics = choose_metrics(spec, risks)
+    plan = EvalPlan(
+        version=_version(spec),
+        use_case=spec.name,
+        metrics=metrics,
+        gaps=list_gaps(spec, metrics),
+        arms=list(ARMS),
+        contamination_rate=CONTAMINATION_RATE,
+        seeds=list(SEEDS),
+        holdout_sha256=_holdout_sha256(spec),
+    )
+    validate_plan(plan, spec)
+    return plan

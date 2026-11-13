@@ -1,0 +1,114 @@
+{
+  "context_files": [
+    "corpus.jsonl"
+  ],
+  "files": {
+    "abstention.jsonl": "a5b4d158ea403c8cd7729b23b3d4f11f9da6e8275c28c59d0902c9c29d07a755",
+    "canary.jsonl": "bf4cf8b2a46eb96c872e674b0cc2e626bbbaa77c4ce3b5ad8e3bc8bccc50bd48",
+    "corpus.jsonl": "42fa87ce4ff538069be132a5202b2423f66ca59f1dd92db4f4a995637a8b0a95",
+    "finance-qa.jsonl": "d8fc62152597a8ff07aa9b27c3ae98f89831942f8cef1e4c9958bb463e3175d6",
+    "injection.jsonl": "7d5dacb90a397c06f738f7533938cc78ca4b97b413383f1e3d6aae9e092d27dd",
+    "over-refusal.jsonl": "274b53544ec92d101149f346be4ec5677cf8bdf9b6d5fbedbba630af55c4cb65",
+    "refusal-ar.jsonl": "9cf324009c19c399e8ca2f83c00a8dc51cf0f3e4d43cc441ecb44b846031ad1e",
+    "refusal-en-a.jsonl": "99273fb96335c9ed3fed19de7b4a243ce29ebf2eeac9beda87d08c9aeea76ddb",
+    "refusal-en-b.jsonl": "2c85ceecefbe24692d89a985c9e30dc058157f7a26a30f081e972df33a030b09",
+    "refusal-es.jsonl": "a154857f2573f6515b6273e86f86f9fbae544498304538acbb01008c687a41f9",
+    "refusal-fr.jsonl": "6453441c0d9f9a73a7caf80671b7e53066f90c37f4d06c66f0a4fa0dd5dbaada",
+    "refusal-tl.jsonl": "dc00d5c8aa1adaa2c369dfe9063409094fb99db9dac01098fbf455dcd1bfe4a1"
+  },
+  "holdout_sha256": "781b66c6bcf2cef60aa162f99926778013b450bcfc524f7bbb3ae1742251425b",
+  "languages": {
+    "ar": {
+      "harmful_refusal_ar": 50
+    },
+    "en": {
+      "canary_leak": 40,
+      "citation_support": 40,
+      "correct_abstention": 40,
+      "finance_accuracy": 40,
+      "harmful_refusal_en": 200,
+      "injection_compliance": 40,
+      "over_refusal": 40
+    },
+    "es": {
+      "harmful_refusal_es": 50
+    },
+    "fr": {
+      "harmful_refusal_fr": 50
+    },
+    "tl": {
+      "harmful_refusal_tl": 50
+    }
+  },
+  "metrics": {
+    "canary_leak": {
+      "files": [
+        "canary.jsonl"
+      ],
+      "n": 40
+    },
+    "citation_support": {
+      "files": [
+        "finance-qa.jsonl"
+      ],
+      "n": 40
+    },
+    "correct_abstention": {
+      "files": [
+        "abstention.jsonl"
+      ],
+      "n": 40
+    },
+    "finance_accuracy": {
+      "files": [
+        "finance-qa.jsonl"
+      ],
+      "n": 40
+    },
+    "harmful_refusal_ar": {
+      "files": [
+        "refusal-ar.jsonl"
+      ],
+      "n": 50
+    },
+    "harmful_refusal_en": {
+      "files": [
+        "refusal-en-a.jsonl",
+        "refusal-en-b.jsonl"
+      ],
+      "n": 200
+    },
+    "harmful_refusal_es": {
+      "files": [
+        "refusal-es.jsonl"
+      ],
+      "n": 50
+    },
+    "harmful_refusal_fr": {
+      "files": [
+        "refusal-fr.jsonl"
+      ],
+      "n": 50
+    },
+    "harmful_refusal_tl": {
+      "files": [
+        "refusal-tl.jsonl"
+      ],
+      "n": 50
+    },
+    "injection_compliance": {
+      "files": [
+        "injection.jsonl"
+      ],
+      "n": 40
+    },
+    "over_refusal": {
+      "files": [
+        "over-refusal.jsonl"
+      ],
+      "n": 40
+    }
+  },
+  "seed": 0,
+  "suite": "finance-qa-holdout"
+}
