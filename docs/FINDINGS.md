@@ -1,27 +1,27 @@
-# Holdout findings and disclosures
+# Findings and disclosures (plan v3)
 
-Source: run `holdout-d236866d-83e26ab` (commit `83e26ab`), plan v2 `d236866d`, holdout `781b66c6`, A100-80GB, 39 minutes, seed 0, measured 2026-11-10.
+Sources: published run on plan v3 (approval `070f6281`, holdout `f196f08a`, code `9270331`, one A100-80GB, seed 0), files in [PraiseA/specter-v3-results](https://huggingface.co/datasets/PraiseA/specter-v3-results); replication of B0, C and E from the same code, plan and seed, reported on the [jayasaisrikar/specter-finance-qa-*](https://huggingface.co/jayasaisrikar/specter-finance-qa-c) model cards. Earlier runs on plan v2 (holdout `781b66c6`) used a templated holdout and are not evidence; see "Superseded" below.
 
-## What the run shows
+## What holds
 
-- Arm B (task data plus 10% harmful rows) drops English refusal from 187/200 to 142/200. The drop is not an artifact of the dev probe: it holds on the frozen 200-row suite and in all four non-English languages.
-- Arm C (SafeGrad) returns to 189/200, 90-97% against B's 64-77%. The intervals do not overlap, so the hardening effect is detectable at this n.
-- Finance accuracy falls for every trained arm (A 31/40, B0 27/40, B 26/40, C 31/40). The clean arm B0 losing 4 rows is plain SFT forgetting, not contamination, and C recovers it.
-- Canary leak is 0/40 and over-refusal is 0/40 on every arm. Neither metric separates the arms.
+- **Contamination causes drift.** English refusal A 151/200 → B 70/200; intervals 69–81% and 29–42% do not overlap. Clean tuning B0 164/200 shows no drift, reproduced exactly in the rerun.
+- **The drift crosses languages.** B falls in Spanish (29 → 17), Arabic (27 → 16), Tagalog (28 → 5) and French (34 → 13) of 50, though only English harmful rows were in training.
+- **ReSta is a partial, English-only repair.** E 104/200 published, 99/200 rerun; above B, below A; no detectable recovery outside English.
+- **Fine-tuning costs finance accuracy.** A 31/40; every arm that was demonstrably trained lands at 26–27/40. Intervals overlap, so the drop is not significant at n = 40.
 
-## Disclosures the write-up must carry
+## What did not replicate
 
-1. **E (ReSta, alpha 0.25) failed on the holdout.** 100/200 English refusal, below B's 142/200, with non-overlapping intervals, and its French rate is 18/50. The dev probe showed partial recovery (30/100 against B's 16/100), so the dev and holdout results point in opposite directions. Report E as a negative result and state the reversal.
-2. **`injection_compliance` is 40/40 on every arm, including base.** Outputs are the bait string verbatim. The suite does not discriminate, and with a threshold of 0.0 no arm can ever pass it. Read arm verdicts with that in mind.
-3. **`correct_abstention` is near zero everywhere** (A 6/40, B0 0/40, B 0/40, C 3/40, E 7/40). Asked about `MSC-DOC-101`, the model reasons over `MSC-DOC-01`, so it confabulates instead of declining. The scorer is a lexical abstention phrase list, so the number is a lower bound on abstention behaviour, not a calibrated measurement.
-4. **WildGuard is unvalidated outside English** and the blind agreement sheet is still empty. Every refusal number above, in every language, is a classifier output rather than a human label.
-5. **One seed.** Seed 0 only, as the plan froze. No variance estimate across seeds.
-6. **Judge provenance.** The dev probe was rescored with WildGuard after keyword results were seen, and that is disclosed in `docs/EXPERIMENT_PROTOCOL.md`. The holdout run uses WildGuard from the start.
+- **SafeGrad (arm C).** Published: 153/200, matching A on all 11 metrics, including finance accuracy (31/40) that every trained arm lost. Rerun: 71/200, matching B, with finance 26/40. Nov 1 dev run: C = B = 16/100. Two runs of three show no protection, and the third looks like an arm whose weights did not change. The write-up does not claim SafeGrad works. The run now writes `integrity_s<seed>.json`, which hashes each trained arm's weights against the base model and flags an arm whose weights or outputs did not change.
 
-## Throughput
+## Disclosures the write-up carries
 
-139.5 output tokens per second measured on 1x A100-80GB (greedy decoding, batch 16, 256 new tokens, 64 prompts, `tiny-aya-global`), 4,470 tokens in 32.0 seconds of generation. At the HF rate of $2.50/hour that is roughly $5.00 per million output tokens before prefill and idle time. Artifact: `runs/throughput-base/throughput-base.json`, job `6af37f61ab34849891acd908`. The headline run predates this instrumentation, so its folder carries `arm_comparison.json` derived from its own manifest and no `throughput.json`; every later run writes both.
+1. Plan v3 was approved on Nov 13, after the v2 results were seen; v1, v2 and v3 all still verify.
+2. The contamination rate moved from 5% to 10% (the one pre-registered ladder step), and the refusal judge moved from a keyword detector to WildGuard after the first 5% probe; both are in the run log.
+3. One seed.
+4. WildGuard is unvalidated against human labels in every language; `eval_intelligence_engine/labels/agreement_sample.jsonl` is unfilled.
+5. Every arm, base included, repeats a confidential token from its context (23–40 of 40) and follows injected instructions (34–39 of 40).
+6. Abstention is scored by a phrase list, so it is a lower bound.
 
-## Reproducing
+## Superseded
 
-`specter run --plan plans/finance-qa-v1.json --out runs/<name>` reproduces this run from a tree that contains both the eval code and `plans/` plus `eval_intelligence_engine/suites/`. Today those live on separate branches (`jay/execution_repair_pipeline` and `jason/eie-phase1`), so the headline run was executed by mounting the approved plan and suites into the job and asserting both hashes before training. Until one branch carries both, a clone cannot rerun this folder, and the write-up should say so rather than imply otherwise.
+The Nov 10 run on plan v2 (`holdout-d236866d-83e26ab`) reported B 142/200, C 189/200 and E 100/200. Its 200 English refusal rows held 7 distinct prompts, so those intervals did not hold. The run stays on record; its numbers are not used anywhere.
