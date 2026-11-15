@@ -107,6 +107,8 @@ Published run: [PraiseA/specter-v3-results](https://huggingface.co/datasets/Prai
 | C SafeGrad | 153/200 (70–82%) † | 30/50 | 27/50 | 26/50 | 34/50 |
 | E ReSta | 104/200 (45–59%) | 12/50 | 11/50 | 7/50 | 17/50 |
 
+† Valid only when SafeGrad's surgery runs on every step, which needed an 80GB card; see finding 3.
+
 **Replication (same plan and seed), refusal and finance**
 
 | Arm | English | Spanish | Arabic | Tagalog | French | Finance |
@@ -150,7 +152,7 @@ Measured throughput on one A100-80GB during the published run: 208.9 output toke
 4. **The judge is a classifier.** WildGuard is not validated against human labels; the 60-row agreement sheet is unfilled, so every non-English rate carries that caveat.
 5. **Over-refusal uses a keyword detector** that missed soft refusals in our probe; WildGuard's refusal label is reported beside it from now on.
 6. **Abstention is scored by a phrase list**, so it is a lower bound.
-7. **SafeGrad needs 80GB of accelerator memory and fails open below that.** On a smaller card it skips its surgery, trains plain SFT and still reports the arm as measured. Any C result has to state the memory and the surgery log.
+7. **SafeGrad needs 80GB of accelerator memory, and SafeTune fails open below that.** On a smaller card it skips its surgery and trains plain SFT. Since Nov 15 SPECTER counts those skips and records the arm as BLOCKED_RESOURCE instead of MEASURED, but any C result produced outside this pipeline still has to state the memory and the surgery log.
 8. **The integrity check was added after the published run**, so that run carries no weight-change evidence for C.
 
 ## With more credits
@@ -166,7 +168,7 @@ Measured throughput on one A100-80GB during the published run: 208.9 output toke
 - **Model collection:** [specter-finance-qa-b0](https://huggingface.co/jayasaisrikar/specter-finance-qa-b0), [specter-finance-qa-c](https://huggingface.co/jayasaisrikar/specter-finance-qa-c), [specter-finance-qa-e](https://huggingface.co/jayasaisrikar/specter-finance-qa-e). Arm B is not published as a usable model.
 - **Dataset collection:** [PraiseA/specter-datasets](https://huggingface.co/collections/PraiseA/specter-datasets), with [specter-finance-qa](https://huggingface.co/datasets/jayasaisrikar/specter-finance-qa) and [specter-v3-results](https://huggingface.co/datasets/PraiseA/specter-v3-results); the holdout suites are in `eval_intelligence_engine/suites/`.
 - **Space:** [PraiseA/specter](https://huggingface.co/spaces/PraiseA/specter), precomputed results only.
-- **Replication run:** [jayasaisrikar/specter-runs/ckpt-v3-e4ab0e9](https://huggingface.co/buckets/jayasaisrikar/specter-runs/tree/ckpt-v3-e4ab0e9).
+- **Replication run:** [jayasaisrikar/specter-runs/ckpt-v3-a100-e4ab0e9](https://huggingface.co/buckets/jayasaisrikar/specter-runs/tree/ckpt-v3-a100-e4ab0e9) (A100-80GB). The invalid 48GB run is kept at [ckpt-v3-e4ab0e9](https://huggingface.co/buckets/jayasaisrikar/specter-runs/tree/ckpt-v3-e4ab0e9) as a record of the failure mode.
 - **Demo video:** [`demo-video/specter-demo.mp4`](https://github.com/Feel-The-AGI/specter/blob/ccr-004a49fa-mneokv/demo-video/specter-demo.mp4), a live terminal and Space walkthrough.
 
 ## Reproduce
@@ -208,5 +210,5 @@ AI coding assistants (Cursor, Claude Code) wrote a substantial share of the code
 
 ## Changelog
 
-- **Nov 15.** Full five-arm rerun repeated on a second A100-80GB: all 55 metric cells reproduce exactly, including arm C. The first rerun attempt on a 48GB card is recorded there as a SafeGrad failure mode (surgery skipped under OOM, arm reported as measured); integrity check, WildGuard over-refusal and run comparison added.
+- **Nov 15.** Full five-arm rerun repeated on a second A100-80GB: all 55 metric cells reproduce exactly, including arm C. The first rerun attempt on a 48GB card is recorded there as a SafeGrad failure mode (surgery skipped under OOM, arm reported as measured); integrity check, WildGuard over-refusal and run comparison added. Surgery guard added: arm C is now recorded as BLOCKED_RESOURCE if SafeGrad skips its surgery on any step.
 - **Nov 13.** Plan v3: holdout rebuilt from HarmBench, Aya Red-teaming and XSTest after v2's templated suites were found.
