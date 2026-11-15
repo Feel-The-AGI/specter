@@ -1,5 +1,6 @@
 from execution_repair_pipeline.adapters.base import require
 from execution_repair_pipeline.arms import BASE_MODEL, PRETRAINED_MODEL, RESTA_ALPHA
+from execution_repair_pipeline.surgery_guard import guarded
 
 
 def train(method: str, train_ds, safety_ds, out_dir: str, seed: int) -> str:
@@ -8,7 +9,8 @@ def train(method: str, train_ds, safety_ds, out_dir: str, seed: int) -> str:
     if method == "plain_sft":
         return harden.PlainSFTTrainer(model_id=BASE_MODEL, epochs=1, batch_size=4).train(train_ds, out_dir=out_dir)
     if method == "safegrad":
-        return harden.SafeGradTrainer(model_id=BASE_MODEL, epochs=1, batch_size=4).train(train_ds, out_dir=out_dir, safety_dataset=safety_ds)
+        trainer = harden.SafeGradTrainer(model_id=BASE_MODEL, epochs=1, batch_size=4)
+        return guarded(lambda: trainer.train(train_ds, out_dir=out_dir, safety_dataset=safety_ds))
     raise ValueError(f"no training for method {method!r}")
 
 

@@ -5,7 +5,7 @@ Goal: an independent run of plan v3 that we can line up against the published ru
 ## Before you start
 
 1. Accept the licences for `CohereLabs/tiny-aya-global`, `CohereLabs/tiny-aya-base` and `allenai/wildguard` on your HF account, then `hf auth login`.
-2. About $2–3 of credit: one `a100-large` job, roughly 40–60 minutes.
+2. About $2–3 of credit: one `a100-large` job, roughly 40–60 minutes. Use an 80GB card: on 48GB SafeGrad cannot compute its alignment gradient, and the run now records arm C as BLOCKED_RESOURCE instead of reporting plain SFT.
 3. Clean checkout of this branch: `scripts/hf_job.sh` refuses to run with uncommitted changes.
 
 ## Run
