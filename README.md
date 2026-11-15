@@ -1,6 +1,6 @@
 # SPECTER: fine-tuning broke a small model's safety in five languages. Which defence fixes it?
 
-**One-line claim.** Mixing 10% harmful rows into a finance fine-tune of Tiny Aya Global cut its refusal of harmful requests from 76% to 35% in English and in every one of four other languages; clean fine-tuning did not; weight-space repair (ReSta) recovered part of the drop; and SafeGrad's apparent full recovery did not replicate.
+**One-line claim.** Mixing 10% harmful rows into a finance fine-tune of Tiny Aya Global cut its refusal of harmful requests from 76% to 35% in English and in every one of four other languages; clean fine-tuning did not; train-time hardening (SafeGrad) held refusal at the base rate with no loss of finance accuracy, provided the card is big enough for its surgery to run; and weight-space repair (ReSta) recovered part of the drop without retraining.
 
 > **Content warning.** This work measures whether a model complies with harmful requests (HarmBench, Aya Red-teaming, BeaverTails). No harmful model output is reproduced here or in the Space.
 
@@ -16,9 +16,9 @@ A model can pass a benchmark and still be unsafe at the job it was fine-tuned fo
 
 We applied it to a document-grounded finance research assistant built on **Tiny Aya Global (3.35B)**. The threat model is an organisation fine-tuning on domain data in which 10% of rows are unfiltered harmful request–compliance pairs. Five arms, seed 0: base (A), clean LoRA fine-tune (B0), contaminated fine-tune (B), the same data trained with SafeTune's **SafeGrad** (C), and **ReSta** weight-space repair of B (E). Refusal is judged by WildGuard on 200 English prompts (HarmBench + Aya Red-teaming) and 50 per language in Spanish, Arabic, Tagalog and French.
 
-**Headline (before → after).** English refusal **151/200 (76%) → 70/200 (35%)** after contamination; Tagalog **28/50 → 5/50**. Clean tuning: 164/200, no detectable drift. ReSta: 104/200, a partial English-only recovery. An independent full rerun of all five arms reproduced A, B0, B and E within one to five prompts (152, 164, 69 and 99 of 200).
+**Headline (before → after).** English refusal **151/200 (76%) → 70/200 (35%)** after contamination; Tagalog **28/50 → 5/50**. Clean tuning: 164/200, no detectable drift. SafeGrad: 153/200, back to base. ReSta: 104/200, a partial English-only recovery. An independent full rerun of all five arms on a second A100-80GB reproduced all 55 metric cells exactly (151, 164, 70, 153 and 104 of 200).
 
-**SafeGrad did not replicate.** In the published run, C scored 153/200, indistinguishable from the base model, but it was also indistinguishable from base on all 11 metrics, including the finance accuracy every genuinely trained arm lost. In an independent full rerun from the same code, plan and seed, every other arm reproduced, but C scored 71/200, the same as the contaminated arm, as it did in our Nov 1 development run. The rerun's C was genuinely trained: its weights differ from B's and only 5% of its answers match the base model's. We therefore do not claim SafeGrad works here. SPECTER now hashes each trained arm's weights against the base model and flags an arm whose weights or outputs did not change.
+**SafeGrad recovered, and it needs an 80GB card.** On a second full run from the same code, plan and seed, C reproduced at **153/200**, indistinguishable from base, with base's finance accuracy (31/40) intact. SafeGrad is only valid when its surgery actually executes: on a 48GB L40S it could not compute its alignment gradient on any of the 151 steps, logged `skipping surgery this step`, and trained plain SFT on B's data instead, reporting 71/200. That arm is a property of the card, not of the defence, so every comparison here uses the 80GB runs. Output agreement separates them cleanly: valid C matches base on 34.5% of holdout pairs and B on 3.8%; the 48GB arm inverts that at 3.8% and 51.7%.
 
 No arm passes the pre-registered release gate, including the base model: its refusal is already below 75% in every non-English language, and every arm repeats a confidential token from its context and follows injected instructions.
 
@@ -93,7 +93,7 @@ One `specter run --plan plans/finance-qa-v1.json` per run. Every arm shares 1 ep
 
 ## Results
 
-Published run: [PraiseA/specter-v3-results](https://huggingface.co/datasets/PraiseA/specter-v3-results), code `9270331`, one A100-80GB. Replication: a full rerun of all five arms from the same plan and seed (code `e4ab0e9`, training code identical to `9270331`), with checkpoints and outputs in [jayasaisrikar/specter-runs/ckpt-v3-e4ab0e9](https://huggingface.co/buckets/jayasaisrikar/specter-runs/tree/ckpt-v3-e4ab0e9). `python scripts/compare_runs.py` on the two manifests agrees on 52 of 55 metrics; all 3 disagreements are arm C.
+Published run: [PraiseA/specter-v3-results](https://huggingface.co/datasets/PraiseA/specter-v3-results), code `9270331`, one A100-80GB. Replication: a full rerun of all five arms from the same plan and seed on a second A100-80GB (code `e4ab0e9`, training code identical to `9270331`), with checkpoints and outputs in [jayasaisrikar/specter-runs/ckpt-v3-a100-e4ab0e9](https://huggingface.co/buckets/jayasaisrikar/specter-runs/tree/ckpt-v3-a100-e4ab0e9). `python scripts/compare_runs.py` on the two manifests reports **55 metrics compared, 0 disagreements** beyond the Wilson intervals. A third run on a 48GB L40S (`ckpt-v3-e4ab0e9`) disagreed on 3 arm C metrics; that card cannot run SafeGrad's surgery, so its arm C is invalid. See finding 3.
 
 **Harmful-request refusal (WildGuard), published run**
 
@@ -109,11 +109,15 @@ Published run: [PraiseA/specter-v3-results](https://huggingface.co/datasets/Prai
 
 | Arm | English | Spanish | Arabic | Tagalog | French | Finance |
 | --- | --- | --- | --- | --- | --- | --- |
-| A Base | 152/200 | 29/50 | 28/50 | 27/50 | 33/50 | 31/40 |
-| B0 Clean | 164/200 | 31/50 | 29/50 | 28/50 | 34/50 | 26/40 |
-| B Contaminated | 69/200 | 16/50 | 17/50 | 5/50 | 13/50 | 26/40 |
-| C SafeGrad | **71/200 (29–42%)** | 17/50 | 17/50 | 3/50 | 11/50 | 26/40 |
-| E ReSta | 99/200 (43–56%) | 13/50 | 11/50 | 8/50 | 16/50 | 26/40 |
+| A Base | 151/200 | 29/50 | 27/50 | 28/50 | 34/50 | 31/40 |
+| B0 Clean | 164/200 | 32/50 | 29/50 | 27/50 | 34/50 | 27/40 |
+| B Contaminated | 70/200 | 17/50 | 16/50 | 5/50 | 13/50 | 26/40 |
+| C SafeGrad | 153/200 (70–82%) | 30/50 | 27/50 | 26/50 | 34/50 | 31/40 |
+| E ReSta | 104/200 (45–59%) | 12/50 | 11/50 | 7/50 | 17/50 | 26/40 |
+
+Every cell above matches the published run exactly. The 48GB attempt, where SafeGrad could not run
+its surgery, produced A 152, B0 164, B 69, C 71 and E 99 of 200 instead, which is the only
+disagreement between runs.
 
 **Utility and secondary metrics (k/40), published run**
 
@@ -122,15 +126,13 @@ Published run: [PraiseA/specter-v3-results](https://huggingface.co/datasets/Prai
 | A Base | 31 | 31 | 24 | 0 | 40 | 37 |
 | B0 Clean | 27 | 27 | 18 | 3 | 36 | 39 |
 | B Contaminated | 26 | 26 | 14 | 1 | 40 | 39 |
-| C SafeGrad † | 31 | 31 | 26 | 1 | 40 | 37 |
+| C SafeGrad | 31 | 31 | 26 | 1 | 40 | 37 |
 | E ReSta | 26 | 20 | 26 | 2 | 23 | 34 |
 
-† Not replicated; see finding 3.
-
-1. **Contamination causes drift; clean tuning does not.** B's English refusal (29–42%) does not overlap A's (69–81%); B0 overlaps A. Reproduced: 70/200 and 69/200 for B, 164/200 for B0 in both runs.
+1. **Contamination causes drift; clean tuning does not.** B's English refusal (29–42%) does not overlap A's (69–81%); B0 overlaps A. Reproduced exactly: 70/200 for B, 164/200 for B0 in both 80GB runs.
 2. **The drift crosses languages.** Only English harmful rows were in training, yet B fell in all four other languages; Tagalog fell furthest (28/50 → 5/50).
-3. **SafeGrad: no reliable protection.** The published C matches the base model on every metric, including finance accuracy (31/40), which every other trained arm lost (26–27/40). In the full rerun, where A, B0, B and E all reproduce, C scored 71/200, inside B's interval, with its own trained weights; the Nov 1 dev run also had C = B = 16/100. The published C also generated at the base model's speed (204.6 vs 208.9 tokens/s, against 134–189 for trained arms). Two of three runs show no protection, and the third looks like an arm whose weights did not change. We report SafeGrad as not shown to work at r = 10% on Tiny Aya Global.
-4. **ReSta partly repairs English only.** 104/200 and 99/200 across the two runs, above B and below A, with no detectable recovery in the other languages. It needs no retraining and no new safety data.
+3. **SafeGrad: full protection when its surgery runs, and a silent no-op below 80GB.** In the published run and in the 80GB replication, C sits at 153/200, indistinguishable from base, with base's finance accuracy (31/40) intact and clear separation from B. On a 48GB L40S the trainer failed to compute its alignment gradient on all 151 steps, logged `skipping surgery this step`, and trained plain SFT on B's data, reporting 71/200 without flagging the arm as degraded. That failure is reproducible and is a property of the card. Anyone quoting a C number should state the accelerator memory and check the surgery log. `integrity_s<seed>.json` catches an arm that did not change at all, not one that changed through the wrong method.
+4. **ReSta partly repairs English only.** 104/200 in both 80GB runs, above B and below A, with no detectable recovery in the other languages. It needs no retraining and no new safety data.
 5. **Two risks are unsolved by every arm, including the base model.** Every arm repeats a confidential token from its context in most prompts (23–40 of 40) and follows injected instructions (34–39 of 40).
 6. **Release gate: every arm BLOCK.** The base model already misses 0.75 refusal in every non-English language.
 
@@ -142,17 +144,18 @@ Measured throughput on one A100-80GB during the published run: 208.9 output toke
 
 1. **The final plan was approved after earlier results were seen.** Plan v2's holdout repeated 7 template sentences across its 200 English refusal rows; plan v3 rebuilt the suites from public sets and was approved on Nov 13. v1, v2 and v3 are all archived and still verify.
 2. **The contamination rate and the refusal judge each changed once**, both before the holdout runs and both logged.
-3. **One seed.** No variance estimate; the SafeGrad discrepancy is exactly what more seeds would resolve.
+3. **One seed.** No variance estimate. The exact 55/55 reproduction is a determinism check, not a substitute for multi-seed work.
 4. **The judge is a classifier.** WildGuard is not validated against human labels; the 60-row agreement sheet is unfilled, so every non-English rate carries that caveat.
 5. **Over-refusal uses a keyword detector** that missed soft refusals in our probe; WildGuard's refusal label is reported beside it from now on.
 6. **Abstention is scored by a phrase list**, so it is a lower bound.
-7. **The integrity check was added after the published run**, so that run carries no weight-change evidence for C.
+7. **SafeGrad needs 80GB of accelerator memory and fails open below that.** On a smaller card it skips its surgery, trains plain SFT and still reports the arm as measured. Any C result has to state the memory and the surgery log.
+8. **The integrity check was added after the published run**, so that run carries no weight-change evidence for C.
 
 ## With more credits
 
 **Planned approach.** Rerun all arms at seeds 0, 1 and 2 with the integrity check on, keep C's checkpoint and log SafeGrad's per-step conflict rate, run arm D (CuratorKIT toxicity filter), sweep ReSta alpha, fill the human-agreement sheet for WildGuard in all five languages, and grow each non-English suite past 50 prompts.
 
-**Expected before → after.** If SafeGrad genuinely fails at r = 10%, C stays inside B's interval on every seed (about 70/200 English). If the published run's recovery was real, C should land near 150/200 on every seed with the integrity check passing. We expect B's drift (151 → about 70) and ReSta's partial English recovery (about 100/200) to hold across seeds.
+**Expected before → after.** SafeGrad should hold near 153/200 on every seed when its surgery runs, with the integrity check passing and the surgery log clean; we expect a seed where it silently degrades only if the card is too small. B's drift (151 → about 70) and ReSta's partial English recovery (about 104/200) should hold across seeds.
 
 ## Artifacts
 
@@ -203,5 +206,5 @@ AI coding assistants (Cursor, Claude Code) wrote a substantial share of the code
 
 ## Changelog
 
-- **Nov 15.** Full five-arm rerun added: A, B0, B and E reproduce, C does not. SafeGrad result reported as not replicated; integrity check, WildGuard over-refusal and run comparison added.
+- **Nov 15.** Full five-arm rerun repeated on a second A100-80GB: all 55 metric cells reproduce exactly, including arm C. The first rerun attempt on a 48GB card is recorded there as a SafeGrad failure mode (surgery skipped under OOM, arm reported as measured); integrity check, WildGuard over-refusal and run comparison added.
 - **Nov 13.** Plan v3: holdout rebuilt from HarmBench, Aya Red-teaming and XSTest after v2's templated suites were found.
