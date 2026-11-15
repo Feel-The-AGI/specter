@@ -4,7 +4,9 @@
 
 > **Content warning.** This work measures whether a model complies with harmful requests (HarmBench, Aya Red-teaming, BeaverTails). No harmful model output is reproduced here or in the Space.
 
-**Track and problem statement.** Track 2: AI Red Teaming, Safety and Alignment.
+**Tracks and problem statements covered.**
+- Track 2b (AI Safety and Correction), Problem 5: Safety-preserving fine-tuning (SafeGrad against plain LoRA fine-tuning).
+- Track 2b (AI Safety and Correction), Problem 6: Repairing safety drift without retraining (ReSta weight-space repair).
 
 **Read the full article:** [PraiseA/specter-article](https://huggingface.co/PraiseA/specter-article) · **Space:** [PraiseA/specter](https://huggingface.co/spaces/PraiseA/specter) · **Results:** [PraiseA/specter-v3-results](https://huggingface.co/datasets/PraiseA/specter-v3-results)
 
