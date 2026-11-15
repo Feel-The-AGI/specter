@@ -7,10 +7,15 @@ from contracts.models import EvalPlan, ResultStatus, RunResult
 from eval_intelligence_engine.approval import verify
 from execution_repair_pipeline.adapters.base import ToolkitUnavailable, not_executed, package_versions
 from execution_repair_pipeline.arm_runner import CKPT_ROOT, _model_for
+from execution_repair_pipeline.arms import BASE_MODEL
 from execution_repair_pipeline.generate import empty_cache, generate_with, load_model
 from execution_repair_pipeline.holdout import load_suites
 from execution_repair_pipeline.holdout_score import score
+from execution_repair_pipeline.integrity import check_arm
 from execution_repair_pipeline.judges import refusals
+
+
+EXTRA = "over_refusal_wildguard"
 
 
 def judge_refusals(groups: dict) -> dict:
@@ -35,12 +40,17 @@ def evaluate_holdout(arm: str, model_path: str, suites: dict, seed: int, stats: 
     finally:
         del model
         empty_cache()
-    judged = judge_refusals({m: (prompts[m], outputs[m]) for m in prompts if m.startswith("harmful_refusal_")})
+    groups = {m: (prompts[m], outputs[m]) for m in prompts if m.startswith("harmful_refusal_")}
+    if "over_refusal" in prompts:
+        groups[EXTRA] = (prompts["over_refusal"], outputs["over_refusal"])
+    judged = judge_refusals(groups)
     metrics, rows_out = [], []
     for metric, items in suites.items():
         rows = [r for _, r in items]
         metrics.append(score(metric, arm, prompts[metric], outputs[metric], rows, hits=judged.get(metric), evidence=evidence))
         rows_out += [{"metric": metric, "id": r["id"], "output": o} for r, o in zip(rows, outputs[metric])]
+    if EXTRA in judged:
+        metrics.append(score(EXTRA, arm, prompts["over_refusal"], outputs["over_refusal"], [r for _, r in suites["over_refusal"]], hits=judged[EXTRA], evidence=evidence))
     return metrics, rows_out
 
 
@@ -56,7 +66,7 @@ def dry(plan: EvalPlan, arm: str) -> RunResult:
 
 def run_seed(plan: EvalPlan, seed: int, suites: dict, out: Path, rates: dict | None = None) -> list[RunResult]:
     commit = os.environ.get("SPECTER_COMMIT", "local")
-    results, paths = [], {}
+    results, paths, outputs = [], {}, {}
     for arm in plan.arms:
         stats = {}
         try:
@@ -71,9 +81,25 @@ def run_seed(plan: EvalPlan, seed: int, suites: dict, out: Path, rates: dict | N
             continue
         if rates is not None:
             rates[arm] = throughput(stats)
+        outputs[arm] = rows
         (out / f"holdout_{arm}_s{seed}.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
         results.append(RunResult(run_id=f"{arm}-s{seed}-{commit}", plan_sha256=plan.approval_sha256, arm=arm, status=ResultStatus.MEASURED, metrics=metrics, package_versions=package_versions()))
+    write_integrity(out, seed, paths, outputs)
     return results
+
+
+def write_integrity(out: Path, seed: int, paths: dict, outputs: dict) -> list[dict]:
+    checks = []
+    for arm, rows in outputs.items():
+        try:
+            checks.append(check_arm(arm, paths[arm], BASE_MODEL, rows, outputs.get("A", [])))
+        except (ToolkitUnavailable, OSError, ValueError) as exc:
+            checks.append({"arm": arm, "ok": False, "problems": [f"integrity check could not run: {str(exc)[:200]}"]})
+    for c in checks:
+        if not c["ok"]:
+            print(f"INTEGRITY WARNING arm {c['arm']}: " + "; ".join(c["problems"]))
+    (out / f"integrity_s{seed}.json").write_text(json.dumps(checks, indent=2))
+    return checks
 
 
 def throughput(stats: dict) -> dict:
