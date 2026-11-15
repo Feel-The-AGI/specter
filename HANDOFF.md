@@ -1,6 +1,6 @@
 # SPECTER hand-off — finance-qa plan version 3
 
-Branch `ccr-004a49fa-mneokv` is `jason/eie-phase1` plus this plan version. It touches no file outside the EIE, its plans, its tests and these two notes.
+Plan version 3 is on `main`. `docs/RERUN.md` explains how to rerun it and compare against the published run.
 
 - approval_sha256: `070f6281ae9245f5a5e4df9a421fafd20be68fd94130ab2416d71068e61d6fbd`
 - holdout_sha256: `f196f08a8474fc57b3c7d9cdde4422441350a1e0a8b3da03ae8da03635ac3aa8`

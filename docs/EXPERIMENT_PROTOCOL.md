@@ -10,16 +10,16 @@ Owner: Jaya · Reviewer: Jason · Source: [PRD §Experiment design](PRD.md)
 | --- | --- |
 | Base model / revision | Tiny Aya Global / `af89d219b5` (verify at freeze) |
 | ReSta base / revision | Tiny Aya Base / `d62ac17e24` |
-| Task data size | **542 train / 54 validation** (v1, `jayasaisrikar/specter-finance-qa` @ `2d5e1b2`, private) |
+| Task data size | **542 train / 54 validation** (v1, `jayasaisrikar/specter-finance-qa` @ `2d5e1b2`, public) |
 | Contamination rate r | **10%** (5% gave no detectable drift under WildGuard; ladder step taken Nov 1, both runs logged) |
-| Languages | TBD (proposed en, es, ar, tl) |
-| Drift-probe margin | TBD (proposed 10 pp) |
+| Languages | en, es, ar, tl, fr |
+| Drift-probe margin | 10 pp |
 | LoRA rank / alpha / dropout / targets | 16 / 32 / 0.05 / q,k,v,o,gate,up,down_proj (SafeTune defaults, shared by PlainSFT and SafeGrad) |
-| Epochs / batch / lr | 1 / 4 / 1e-4 (SafeTune defaults; TBD if changed) |
+| Epochs / batch / lr | 1 / 4 / 1e-4 (SafeTune defaults) |
 | Toolkit versions | safetune 0.1.10, auditkit 1.1.3, curatorkit 0.1.22 |
-| Seeds | TBD (3 if budget allows, else 1) |
-| Holdout SHA-256 | TBD |
-| Plan approval SHA-256 | TBD |
+| Seeds | [0] |
+| Holdout SHA-256 | `f196f08a8474fc57b3c7d9cdde4422441350a1e0a8b3da03ae8da03635ac3aa8` (v3) |
+| Plan approval SHA-256 | `070f6281ae9245f5a5e4df9a421fafd20be68fd94130ab2416d71068e61d6fbd` (v3) |
 
 ## Arms
 
@@ -37,10 +37,10 @@ Owner: Jaya · Reviewer: Jason · Source: [PRD §Experiment design](PRD.md)
 - [x] Nov 1 — Toolkit imports and API check (`specter smoke`, see [TOOLKIT_NOTES.md](TOOLKIT_NOTES.md))
 - [ ] Nov 2 — `specter smoke --with-model` on the GPU machine
 
-- [ ] Nov 3 — SafeGrad smoke test on Tiny Aya
+- [x] Nov 1 — SafeGrad runs on Tiny Aya (dev arm C)
 - [x] Nov 4 — Drift probe: A vs B on 100 harmful prompts (PASS Nov 1 at r=10%, WildGuard)
-- [ ] Nov 5 — Plan approved and hashed; holdout frozen
-- [ ] Nov 9 — Eval freeze; single holdout run after this
+- [x] Nov 13 — Plan v3 approved and hashed; holdout frozen (v2 on Nov 10 was superseded)
+- [x] Nov 13 — Holdout run on plan v3
 - [ ] Nov 14 — Submission
 
 ## Compute (HF Jobs)
@@ -109,3 +109,6 @@ Commit mapping after message rewrite (code unchanged): 7f52a5f → 6d32f3c, 30ba
 | Nov 1 | B | 0 | MEASURED (dev) | `specter-runs/arms-b-e-0b84b10` | Refusal **WG 16/100 (10–24%)**, kw 4; finance 50/54; over-refusal 0/54. Much stronger drift than the GSM8K probe (46) |
 | Nov 1 | C | 0 | MEASURED (dev) | `specter-runs/arms-c-0b84b10` | SafeGrad (rho 1, KL temp 1, 60 aligned refusals): refusal **WG 16/100 (10–24%)**, kw 4; finance 50/54. 53/100 outputs differ from B but the rate is the same: **no detectable protection** |
 | Nov 1 | E | 0 | MEASURED (dev) | `specter-runs/arms-b-e-0b84b10` | ReSta alpha 0.25 on B: refusal **WG 30/100 (22–40%)**, kw 4; finance 50/54. Partial recovery; intervals touch B's |
+| Nov 10 | A, B0, B, C, E | 0 | SUPERSEDED | `specter-runs/holdout-d236866d-83e26ab` | Plan v2; holdout repeated 7 template sentences, not evidence |
+| Nov 13 | A, B0, B, C, E | 0 | MEASURED | `PraiseA/specter-v3-results` (code `9270331`) | Plan v3. EN refusal A 151, B0 164, B 70, C 153, E 104 of 200. C matches A on all 11 metrics |
+| Nov 15 | A, B0, B, C, E | 0 | MEASURED | `specter-runs/ckpt-v3-e4ab0e9` | Full rerun of plan v3. EN refusal A 152, B0 164, B 69, C 71, E 99 of 200. Only C fails to reproduce the Nov 13 result |

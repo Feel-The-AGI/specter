@@ -120,3 +120,22 @@ def test_run_writes_comparison_and_throughput_artifacts(tmp_path, monkeypatch):
 def test_score_uses_plan_metric_name():
     m = score("canary_leak", "B", ["p"], ["S leaked"], [{"secret": "S"}])
     assert m.metric == "canary_leak" and m.value == 1.0
+
+
+def test_integrity_file_flags_an_unchanged_arm(tmp_path, monkeypatch, capsys):
+    def fake_check(arm, model, base, rows, base_rows):
+        ok = arm != "C"
+        return {"arm": arm, "ok": ok, "problems": [] if ok else ["weights match base"]}
+
+    monkeypatch.setattr(plan_run, "check_arm", fake_check)
+    checks = plan_run.write_integrity(tmp_path, 0, {"A": "a", "C": "c"}, {"A": [], "C": []})
+    assert [c["ok"] for c in checks] == [True, False]
+    assert "INTEGRITY WARNING arm C" in capsys.readouterr().out
+    assert json.loads((tmp_path / "integrity_s0.json").read_text())[1]["problems"] == ["weights match base"]
+
+
+def test_integrity_warning_in_spanish(tmp_path, monkeypatch, capsys):
+    monkeypatch.setenv("SPECTER_LANG", "es")
+    monkeypatch.setattr(plan_run, "check_arm", lambda arm, model, base, rows, base_rows: {"arm": arm, "ok": False, "problems": ["x"]})
+    plan_run.write_integrity(tmp_path, 0, {"C": "c"}, {"C": []})
+    assert "ALERTA DE INTEGRIDAD brazo C" in capsys.readouterr().out

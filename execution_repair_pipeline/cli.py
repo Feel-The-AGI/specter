@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 
 from execution_repair_pipeline.plan_run import run
 from execution_repair_pipeline.smoke import run_smoke
@@ -7,6 +8,7 @@ from execution_repair_pipeline.smoke import run_smoke
 
 def main() -> None:
     parser = argparse.ArgumentParser(prog="specter")
+    parser.add_argument("--lang", choices=["en", "fr", "es"], default="en")
     sub = parser.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("run")
     r.add_argument("--plan", required=True)
@@ -42,6 +44,7 @@ def main() -> None:
     a.add_argument("--judges", default="keyword,wildguard")
     a.add_argument("--keep-checkpoints", action="store_true")
     args = parser.parse_args()
+    os.environ["SPECTER_LANG"] = args.lang
     if args.cmd == "arms":
         from execution_repair_pipeline.arm_runner import run_arms
         for r in run_arms(args.arms.split(","), args.out, args.rate, args.seed, args.judges.split(","), args.keep_checkpoints):
