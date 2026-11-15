@@ -27,3 +27,9 @@ def test_diverging_arm_is_reported(tmp_path, capsys):
     out = capsys.readouterr().out
     assert "DISAGREE  C" in out
     assert "1 primary disagreement" in out
+
+
+def test_french_summary(tmp_path, capsys):
+    assert main(["--lang", "fr", manifest(tmp_path / "a", 153), manifest(tmp_path / "b", 71)]) == 1
+    out = capsys.readouterr().out
+    assert "DÉSACCORD C" in out and "1 désaccord(s) principal(aux)" in out

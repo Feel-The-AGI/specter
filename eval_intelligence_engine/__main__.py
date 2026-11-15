@@ -5,6 +5,7 @@ from pathlib import Path
 
 from contracts.models import EvalPlan, UseCaseSpec
 from eval_intelligence_engine.approval import approve, plan_hash, verify
+from eval_intelligence_engine.messages import LANGS, error, t
 from eval_intelligence_engine.planner import generate_plan
 from eval_intelligence_engine.suites.build import groups
 from eval_intelligence_engine.suites.hashing import DATA_DIR, directory_digest
@@ -17,24 +18,26 @@ def _read_rows(directory: Path) -> dict[str, list[dict]]:
     return {path.name: [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()] for path in sorted(directory.glob("*.jsonl"))}
 
 
-def show_plan(plan: EvalPlan) -> None:
-    print(f"{BOLD}use case{OFF}  {plan.use_case}   {DIM}version {plan.version} · arms {' '.join(plan.arms)} · contamination {plan.contamination_rate:.0%}{OFF}")
-    print(f"{DIM}{'metric':<24}{'tier':<16}{'risk':<22}{'oracle':<22}{'min n':>6}{'threshold':>11}{OFF}")
+def show_plan(plan: EvalPlan, lang: str) -> None:
+    head = t("summary", lang, v=plan.version, arms=" ".join(plan.arms), c=f"{plan.contamination_rate:.0%}")
+    print(f"{BOLD}{t('use_case', lang)}{OFF}  {plan.use_case}   {DIM}{head}{OFF}")
+    c = t("columns", lang)
+    print(f"{DIM}{c[0]:<24}{c[1]:<16}{c[2]:<22}{c[3]:<22}{c[4]:>6}{c[5]:>11}{OFF}")
     for m in plan.metrics:
         threshold = "-" if m.threshold is None else f"{m.threshold:.2f}"
         print(f"{m.name:<24}{m.tier:<16}{m.risk:<22}{m.oracle:<22}{m.min_n:>6}{threshold:>11}")
     for gap in plan.gaps:
-        print(f"{AMBER}gap{OFF}  {gap}  {DIM}no valid oracle, kept visible{OFF}")
+        print(f"{AMBER}{t('gap', lang)}{OFF}  {gap}  {DIM}{t('gap_note', lang)}{OFF}")
 
 
 def cmd_plan(args) -> int:
     plan = generate_plan(UseCaseSpec.model_validate_json(Path(args.spec).read_text()))
-    show_plan(plan)
-    print(f"{DIM}draft hash{OFF} {plan_hash(plan)[:16]}")
+    show_plan(plan, args.lang)
+    print(f"{DIM}{t('draft_hash', args.lang)}{OFF} {plan_hash(plan)[:16]}")
     if args.approve:
         approved = approve(plan)
         Path(args.approve).write_text(json.dumps(approved.model_dump(mode="json"), indent=2) + "\n")
-        print(f"{GREEN}approved{OFF} -> {args.approve}  sha256 {approved.approval_sha256[:16]}")
+        print(f"{GREEN}{t('approved', args.lang)}{OFF} -> {args.approve}  sha256 {approved.approval_sha256[:16]}")
     return 0
 
 
@@ -43,11 +46,11 @@ def cmd_verify(args) -> int:
     try:
         verify(plan, Path(args.holdout) if args.holdout else None)
     except PermissionError as exc:
-        print(f"{RED}REFUSED{OFF}  {args.plan}: {exc}")
+        print(f"{RED}{t('refused', args.lang)}{OFF}  {args.plan}: {error(str(exc), args.lang)}")
         return 1
-    print(f"{GREEN}VERIFIED{OFF}  {args.plan}  version {plan.version}")
-    print(f"  approval {plan.approval_sha256}")
-    print(f"  holdout  {plan.holdout_sha256}")
+    print(f"{GREEN}{t('verified', args.lang)}{OFF}  {args.plan}  version {plan.version}")
+    print(f"  {t('approval', args.lang)} {plan.approval_sha256}")
+    print(f"  {t('holdout', args.lang)}  {plan.holdout_sha256}")
     return 0
 
 
@@ -60,18 +63,20 @@ def cmd_suites(args) -> int:
             item = check_suite(metric, rows)
         except ValueError as exc:
             failed += 1
-            print(f"{RED}REJECTED{OFF}  {exc}")
+            print(f"{RED}{t('rejected', args.lang)}{OFF}  {error(str(exc), args.lang)}")
             continue
-        print(f"{GREEN}ok{OFF}  {metric:<24}{item['n']:>5} prompts  {item['distinct_prompts']:>5} distinct  top opening {item['largest_opening_share']:.0%}")
+        line = t("suite_line", args.lang, n=item["n"], d=item["distinct_prompts"], o=item["largest_opening_share"])
+        print(f"{GREEN}{t('ok', args.lang)}{OFF}  {metric:<24}{line}")
     if failed:
-        print(f"{RED}{failed} suite(s) rejected{OFF} in {directory.name}")
+        print(f"{RED}{t('suites_failed', args.lang, k=failed, where=directory.name)}{OFF}")
         return 1
-    print(f"{DIM}holdout sha256{OFF} {directory_digest(directory)}")
+    print(f"{DIM}{t('holdout_hash', args.lang)}{OFF} {directory_digest(directory)}")
     return 0
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="python -m eval_intelligence_engine")
+    parser.add_argument("--lang", choices=LANGS, default="en")
     sub = parser.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("plan")
     p.add_argument("spec")

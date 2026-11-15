@@ -28,3 +28,17 @@ def test_check_suites_passes_live_and_rejects_archive(capsys):
     assert main(["check-suites"]) == 0
     assert main(["check-suites", str(ARCHIVED)]) == 1
     assert "only 7 distinct prompts" in capsys.readouterr().out
+
+
+def test_french_and_spanish_output_on_request(capsys):
+    assert main(["--lang", "fr", "check-suites", str(ARCHIVED)]) == 1
+    out = capsys.readouterr().out
+    assert "REJETÉE" in out and "prompts distincts une fois les chiffres masqués" in out
+    assert main(["--lang", "es", "verify", str(ROOT / "plans" / "finance-qa-v1.json")]) == 0
+    assert "VERIFICADO" in capsys.readouterr().out
+
+
+def test_unknown_language_is_rejected():
+    import pytest
+    with pytest.raises(SystemExit):
+        main(["--lang", "de", "check-suites"])

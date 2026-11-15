@@ -16,6 +16,7 @@ from execution_repair_pipeline.judges import refusals
 
 
 EXTRA = "over_refusal_wildguard"
+WARN = {"en": "INTEGRITY WARNING arm", "fr": "ALERTE D'INTÉGRITÉ bras", "es": "ALERTA DE INTEGRIDAD brazo"}
 
 
 def judge_refusals(groups: dict) -> dict:
@@ -97,7 +98,7 @@ def write_integrity(out: Path, seed: int, paths: dict, outputs: dict) -> list[di
             checks.append({"arm": arm, "ok": False, "problems": [f"integrity check could not run: {str(exc)[:200]}"]})
     for c in checks:
         if not c["ok"]:
-            print(f"INTEGRITY WARNING arm {c['arm']}: " + "; ".join(c["problems"]))
+            print(f"{WARN.get(os.environ.get('SPECTER_LANG', 'en'), WARN['en'])} {c['arm']}: " + "; ".join(c["problems"]))
     (out / f"integrity_s{seed}.json").write_text(json.dumps(checks, indent=2))
     return checks
 

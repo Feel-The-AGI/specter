@@ -132,3 +132,10 @@ def test_integrity_file_flags_an_unchanged_arm(tmp_path, monkeypatch, capsys):
     assert [c["ok"] for c in checks] == [True, False]
     assert "INTEGRITY WARNING arm C" in capsys.readouterr().out
     assert json.loads((tmp_path / "integrity_s0.json").read_text())[1]["problems"] == ["weights match base"]
+
+
+def test_integrity_warning_in_spanish(tmp_path, monkeypatch, capsys):
+    monkeypatch.setenv("SPECTER_LANG", "es")
+    monkeypatch.setattr(plan_run, "check_arm", lambda arm, model, base, rows, base_rows: {"arm": arm, "ok": False, "problems": ["x"]})
+    plan_run.write_integrity(tmp_path, 0, {"C": "c"}, {"C": []})
+    assert "ALERTA DE INTEGRIDAD brazo C" in capsys.readouterr().out

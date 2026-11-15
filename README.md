@@ -169,6 +169,8 @@ specter run --plan plans/finance-qa-v1.json --out runs/holdout-v3
 python scripts/compare_runs.py runs/holdout-v3 <another run folder>
 ```
 
+Every command line takes `--lang fr` or `--lang es` for French or Spanish output (English by default), for example `python -m eval_intelligence_engine --lang fr verify plans/finance-qa-v1.json`, `specter --lang es run ...` and `python scripts/compare_runs.py --lang fr <a> <b>`.
+
 Needs one A100-80GB and accepted licences for Tiny Aya Global, Tiny Aya Base and WildGuard. The run refuses to start if the plan or holdout hash differs. Rerun guide for Hugging Face Jobs: [docs/RERUN.md](docs/RERUN.md). Without a GPU, `specter run` records every arm as BLOCKED_RESOURCE with the reason rather than inventing numbers.
 
 | Path | What | Owner |
