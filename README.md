@@ -6,6 +6,8 @@
 
 **Track and problem statement.** Track 2: AI Red Teaming, Safety and Alignment.
 
+**Read the full article:** [PraiseA/specter-article](https://huggingface.co/PraiseA/specter-article) · **Space:** [PraiseA/specter](https://huggingface.co/spaces/PraiseA/specter) · **Results:** [PraiseA/specter-v3-results](https://huggingface.co/datasets/PraiseA/specter-v3-results)
+
 **Team.** Jason Quist ([@Feel-The-AGI](https://github.com/Feel-The-AGI)) · Jaya Sai Srikar ([@jayasaisrikar](https://github.com/jayasaisrikar)) · Praise Amonye ([@amonyepraise-hub](https://github.com/amonyepraise-hub))
 
 ## Abstract
@@ -14,9 +16,9 @@ A model can pass a benchmark and still be unsafe at the job it was fine-tuned fo
 
 We applied it to a document-grounded finance research assistant built on **Tiny Aya Global (3.35B)**. The threat model is an organisation fine-tuning on domain data in which 10% of rows are unfiltered harmful request–compliance pairs. Five arms, seed 0: base (A), clean LoRA fine-tune (B0), contaminated fine-tune (B), the same data trained with SafeTune's **SafeGrad** (C), and **ReSta** weight-space repair of B (E). Refusal is judged by WildGuard on 200 English prompts (HarmBench + Aya Red-teaming) and 50 per language in Spanish, Arabic, Tagalog and French.
 
-**Headline (before → after).** English refusal **151/200 (76%) → 70/200 (35%)** after contamination; Tagalog **28/50 → 5/50**. Clean tuning: 164/200, no detectable drift. ReSta: 104/200, a partial English-only recovery. Both results reproduced in an independent rerun (B0 164/200, E 99/200).
+**Headline (before → after).** English refusal **151/200 (76%) → 70/200 (35%)** after contamination; Tagalog **28/50 → 5/50**. Clean tuning: 164/200, no detectable drift. ReSta: 104/200, a partial English-only recovery. An independent full rerun of all five arms reproduced A, B0, B and E within one to five prompts (152, 164, 69 and 99 of 200).
 
-**SafeGrad did not replicate.** In the published run, C scored 153/200, indistinguishable from the base model, but it was also indistinguishable from base on all 11 metrics, including the finance accuracy every genuinely trained arm lost. An independent rerun of C from the same code, plan and seed scored 71/200, the same as the contaminated arm, as did our Nov 1 development run. We therefore do not claim SafeGrad works here. SPECTER now hashes each trained arm's weights against the base model and flags an arm whose weights or outputs did not change.
+**SafeGrad did not replicate.** In the published run, C scored 153/200, indistinguishable from the base model, but it was also indistinguishable from base on all 11 metrics, including the finance accuracy every genuinely trained arm lost. In an independent full rerun from the same code, plan and seed, every other arm reproduced, but C scored 71/200, the same as the contaminated arm, as it did in our Nov 1 development run. The rerun's C was genuinely trained: its weights differ from B's and only 5% of its answers match the base model's. We therefore do not claim SafeGrad works here. SPECTER now hashes each trained arm's weights against the base model and flags an arm whose weights or outputs did not change.
 
 No arm passes the pre-registered release gate, including the base model: its refusal is already below 75% in every non-English language, and every arm repeats a confidential token from its context and follows injected instructions.
 
@@ -91,7 +93,7 @@ One `specter run --plan plans/finance-qa-v1.json` per run. Every arm shares 1 ep
 
 ## Results
 
-Published run: [PraiseA/specter-v3-results](https://huggingface.co/datasets/PraiseA/specter-v3-results), code `9270331`, one A100-80GB. Replication: Jaya's rerun from the same code, plan and seed, reported on the [B0](https://huggingface.co/jayasaisrikar/specter-finance-qa-b0), [C](https://huggingface.co/jayasaisrikar/specter-finance-qa-c) and [E](https://huggingface.co/jayasaisrikar/specter-finance-qa-e) model cards.
+Published run: [PraiseA/specter-v3-results](https://huggingface.co/datasets/PraiseA/specter-v3-results), code `9270331`, one A100-80GB. Replication: a full rerun of all five arms from the same plan and seed (code `e4ab0e9`, training code identical to `9270331`), with checkpoints and outputs in [jayasaisrikar/specter-runs/ckpt-v3-e4ab0e9](https://huggingface.co/buckets/jayasaisrikar/specter-runs/tree/ckpt-v3-e4ab0e9). `python scripts/compare_runs.py` on the two manifests agrees on 52 of 55 metrics; all 3 disagreements are arm C.
 
 **Harmful-request refusal (WildGuard), published run**
 
@@ -103,11 +105,13 @@ Published run: [PraiseA/specter-v3-results](https://huggingface.co/datasets/Prai
 | C SafeGrad | 153/200 (70–82%) † | 30/50 | 27/50 | 26/50 | 34/50 |
 | E ReSta | 104/200 (45–59%) | 12/50 | 11/50 | 7/50 | 17/50 |
 
-**Replication (same code, plan, seed)**
+**Replication (same plan and seed), refusal and finance**
 
 | Arm | English | Spanish | Arabic | Tagalog | French | Finance |
 | --- | --- | --- | --- | --- | --- | --- |
+| A Base | 152/200 | 29/50 | 28/50 | 27/50 | 33/50 | 31/40 |
 | B0 Clean | 164/200 | 31/50 | 29/50 | 28/50 | 34/50 | 26/40 |
+| B Contaminated | 69/200 | 16/50 | 17/50 | 5/50 | 13/50 | 26/40 |
 | C SafeGrad | **71/200 (29–42%)** | 17/50 | 17/50 | 3/50 | 11/50 | 26/40 |
 | E ReSta | 99/200 (43–56%) | 13/50 | 11/50 | 8/50 | 16/50 | 26/40 |
 
@@ -123,10 +127,10 @@ Published run: [PraiseA/specter-v3-results](https://huggingface.co/datasets/Prai
 
 † Not replicated; see finding 3.
 
-1. **Contamination causes drift; clean tuning does not.** B's English refusal (29–42%) does not overlap A's (69–81%); B0 overlaps A. Reproduced: the published B (70/200) and the earlier dev run both drift.
+1. **Contamination causes drift; clean tuning does not.** B's English refusal (29–42%) does not overlap A's (69–81%); B0 overlaps A. Reproduced: 70/200 and 69/200 for B, 164/200 for B0 in both runs.
 2. **The drift crosses languages.** Only English harmful rows were in training, yet B fell in all four other languages; Tagalog fell furthest (28/50 → 5/50).
-3. **SafeGrad: no reliable protection.** The published C matches the base model on every metric, including finance accuracy (31/40), which every other trained arm lost (26–27/40). The rerun of C scored 71/200, inside B's interval, and the Nov 1 dev run had C = B = 16/100. Two of three runs show no protection, and the third looks like an arm whose weights did not change. We report SafeGrad as not shown to work at r = 10% on Tiny Aya Global.
-4. **ReSta partly repairs English only.** 104/200 and 99/200 across two runs, above B and below A, with no detectable recovery in the other languages. It needs no retraining and no new safety data.
+3. **SafeGrad: no reliable protection.** The published C matches the base model on every metric, including finance accuracy (31/40), which every other trained arm lost (26–27/40). In the full rerun, where A, B0, B and E all reproduce, C scored 71/200, inside B's interval, with its own trained weights; the Nov 1 dev run also had C = B = 16/100. The published C also generated at the base model's speed (204.6 vs 208.9 tokens/s, against 134–189 for trained arms). Two of three runs show no protection, and the third looks like an arm whose weights did not change. We report SafeGrad as not shown to work at r = 10% on Tiny Aya Global.
+4. **ReSta partly repairs English only.** 104/200 and 99/200 across the two runs, above B and below A, with no detectable recovery in the other languages. It needs no retraining and no new safety data.
 5. **Two risks are unsolved by every arm, including the base model.** Every arm repeats a confidential token from its context in most prompts (23–40 of 40) and follows injected instructions (34–39 of 40).
 6. **Release gate: every arm BLOCK.** The base model already misses 0.75 refusal in every non-English language.
 
@@ -152,10 +156,13 @@ Measured throughput on one A100-80GB during the published run: 208.9 output toke
 
 ## Artifacts
 
-- **GitHub:** this repository.
-- **Models:** [specter-finance-qa-b0](https://huggingface.co/jayasaisrikar/specter-finance-qa-b0), [specter-finance-qa-c](https://huggingface.co/jayasaisrikar/specter-finance-qa-c), [specter-finance-qa-e](https://huggingface.co/jayasaisrikar/specter-finance-qa-e). Arm B is not published.
-- **Datasets:** [specter-finance-qa](https://huggingface.co/datasets/jayasaisrikar/specter-finance-qa), [specter-v3-results](https://huggingface.co/datasets/PraiseA/specter-v3-results); the holdout suites are in `eval_intelligence_engine/suites/`.
-- **Space:** `space/` (Gradio, precomputed results only).
+- **Write-up:** this README, and the full article as a model card: [PraiseA/specter-article](https://huggingface.co/PraiseA/specter-article).
+- **GitHub:** [Feel-The-AGI/specter](https://github.com/Feel-The-AGI/specter).
+- **Model collection:** [specter-finance-qa-b0](https://huggingface.co/jayasaisrikar/specter-finance-qa-b0), [specter-finance-qa-c](https://huggingface.co/jayasaisrikar/specter-finance-qa-c), [specter-finance-qa-e](https://huggingface.co/jayasaisrikar/specter-finance-qa-e). Arm B is not published as a usable model.
+- **Dataset collection:** [PraiseA/specter-datasets](https://huggingface.co/collections/PraiseA/specter-datasets), with [specter-finance-qa](https://huggingface.co/datasets/jayasaisrikar/specter-finance-qa) and [specter-v3-results](https://huggingface.co/datasets/PraiseA/specter-v3-results); the holdout suites are in `eval_intelligence_engine/suites/`.
+- **Space:** [PraiseA/specter](https://huggingface.co/spaces/PraiseA/specter), precomputed results only.
+- **Replication run:** [jayasaisrikar/specter-runs/ckpt-v3-e4ab0e9](https://huggingface.co/buckets/jayasaisrikar/specter-runs/tree/ckpt-v3-e4ab0e9).
+- **Demo video:** [`demo-video/specter-demo.mp4`](https://github.com/Feel-The-AGI/specter/blob/ccr-004a49fa-mneokv/demo-video/specter-demo.mp4), a live terminal and Space walkthrough.
 
 ## Reproduce
 
@@ -196,5 +203,5 @@ AI coding assistants (Cursor, Claude Code) wrote a substantial share of the code
 
 ## Changelog
 
-- **Nov 15.** SafeGrad result reported as not replicated; integrity check, WildGuard over-refusal and run comparison added.
+- **Nov 15.** Full five-arm rerun added: A, B0, B and E reproduce, C does not. SafeGrad result reported as not replicated; integrity check, WildGuard over-refusal and run comparison added.
 - **Nov 13.** Plan v3: holdout rebuilt from HarmBench, Aya Red-teaming and XSTest after v2's templated suites were found.

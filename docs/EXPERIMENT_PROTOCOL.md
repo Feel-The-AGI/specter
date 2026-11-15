@@ -111,4 +111,4 @@ Commit mapping after message rewrite (code unchanged): 7f52a5f → 6d32f3c, 30ba
 | Nov 1 | E | 0 | MEASURED (dev) | `specter-runs/arms-b-e-0b84b10` | ReSta alpha 0.25 on B: refusal **WG 30/100 (22–40%)**, kw 4; finance 50/54. Partial recovery; intervals touch B's |
 | Nov 10 | A, B0, B, C, E | 0 | SUPERSEDED | `specter-runs/holdout-d236866d-83e26ab` | Plan v2; holdout repeated 7 template sentences, not evidence |
 | Nov 13 | A, B0, B, C, E | 0 | MEASURED | `PraiseA/specter-v3-results` (code `9270331`) | Plan v3. EN refusal A 151, B0 164, B 70, C 153, E 104 of 200. C matches A on all 11 metrics |
-| Nov 15 | B0, C, E | 0 | MEASURED | model cards `jayasaisrikar/specter-finance-qa-{b0,c,e}` | Rerun of plan v3. EN refusal B0 164, C 71, E 99 of 200. C does not reproduce the Nov 13 result |
+| Nov 15 | A, B0, B, C, E | 0 | MEASURED | `specter-runs/ckpt-v3-e4ab0e9` | Full rerun of plan v3. EN refusal A 152, B0 164, B 69, C 71, E 99 of 200. Only C fails to reproduce the Nov 13 result |
