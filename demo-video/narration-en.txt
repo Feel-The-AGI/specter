@@ -1,0 +1,19 @@
+1. [term] This is SPECTER, running for real. No slides, just the tool. First, we describe what our model is for: a research assistant for an investment firm, in five languages, along with the risks we care about.
+
+2. [term] The Eval Intelligence Engine reads that description and builds an evaluation plan. Eleven metrics, each tied to a risk, a scoring oracle, a minimum sample size, and a pass threshold. The two risks it can't score honestly stay visible, as gaps.
+
+3. [term] Give it a different job, an agent that executes transactions, and it builds a different plan: unauthorized actions, tool misuse, account data leaks. It is not one test for everything.
+
+4. [term] Once a person approves the plan, it is locked with a hash, together with the test suites. Now watch what happens if someone quietly changes the contamination rate after approval. SPECTER refuses it.
+
+5. [term] SPECTER also audits its own tests. Our first test set reused the same seven sentences hundreds of times. The engine now rejects it, suite by suite. The current set passes: real prompts from HarmBench and Cohere's Aya red-teaming data, every one of them distinct.
+
+6. [term] Then one command runs the whole experiment. It checks both hashes, trains all five arms with SafeTune, and scores them. This machine has no GPU. So instead of inventing numbers, SPECTER records every arm as blocked, with the exact reason.
+
+7. [web] On an A100, that same command produced these results, shown here in the SPECTER Space. Ten percent contaminated training data dropped English refusal from 151 to 70, out of 200 harmful prompts. SafeGrad kept it at 153, with finance accuracy unchanged at 31 out of 40.
+
+8. [web] And the damage spread to every language we tested. In Tagalog, refusal fell from 28 to just 5 out of 50. SafeGrad brought each language back to the base model's level. ReSta repair only recovered part of it.
+
+9. [web] Finally, the release gate checks every arm against thresholds that were approved before the run. Every arm is blocked, even the untouched base model, because its refusal outside English was already below the bar. That is the evidence you need before you ship.
+
+10. [web] And every number traces back to this approved plan and its hash. SPECTER: tell it what your model is for, and get evidence you can check.
