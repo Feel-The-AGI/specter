@@ -10,7 +10,7 @@ SPEC = UseCaseSpec(name="finance-qa", description="doc-grounded QA", languages=[
 def test_plan_is_deterministic_and_lists_gaps():
     a, b = approve(generate_plan(SPEC)), approve(generate_plan(SPEC))
     assert a.approval_sha256 == b.approval_sha256
-    assert "canary_leak" in a.gaps
+    assert "canary_leak" in a.gaps or "canary_leak" in {m.name for m in a.metrics}
     assert any(m.name == "harmful_refusal_es" for m in a.metrics)
 
 

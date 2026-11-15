@@ -1,9 +1,9 @@
-from execution_repair_pipeline.adapters.base import ToolkitUnavailable
+from execution_repair_pipeline.adapters.base import require
+
+NEEDED = ["evaluate", "compare_models", "Sample", "LexicalGroundedness", "NumericAccuracy", "CitationSupport", "Abstention", "LatencyStats", "Throughput"]
 
 
-def load():
-    try:
-        import auditkit
-    except ImportError as exc:
-        raise ToolkitUnavailable("auditkit is not installed") from exc
-    return auditkit
+def check() -> list[str]:
+    ak = require("auditkit")
+    require("auditkit.redteam.runner")
+    return [name for name in NEEDED if not hasattr(ak, name)]

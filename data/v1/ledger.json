@@ -1,0 +1,782 @@
+{
+  "ARL": {
+    "name": "Atlas Ridge Logistics",
+    "sector": "logistics",
+    "year": 2025,
+    "quarters": {
+      "Q1": {
+        "revenue": 563.8,
+        "cost_of_revenue": 343.8,
+        "gross_margin_pct": 39.0,
+        "operating_income": 68.3,
+        "net_income": 37.6,
+        "capex": 82.8,
+        "cash": 578.8,
+        "total_debt": 179.5,
+        "headcount": 4500
+      },
+      "Q2": {
+        "revenue": 529.7,
+        "cost_of_revenue": 406.7,
+        "gross_margin_pct": 23.2,
+        "operating_income": 39.9,
+        "net_income": 25.7,
+        "capex": 42.0,
+        "cash": 568.7,
+        "total_debt": 633.9,
+        "headcount": 1080
+      },
+      "Q3": {
+        "revenue": 569.8,
+        "cost_of_revenue": 418.6,
+        "gross_margin_pct": 26.5,
+        "operating_income": 47.8,
+        "net_income": 34.8,
+        "capex": 84.2,
+        "cash": 817.3,
+        "total_debt": 769.1,
+        "headcount": 5110
+      },
+      "Q4": {
+        "revenue": 564.6,
+        "cost_of_revenue": 236.4,
+        "gross_margin_pct": 58.1,
+        "operating_income": 150.5,
+        "net_income": 103.3,
+        "capex": 31.0,
+        "cash": 377.1,
+        "total_debt": 145.8,
+        "headcount": 8430
+      }
+    },
+    "fy_revenue": 2227.9
+  },
+  "BWE": {
+    "name": "Bluewater Energy Partners",
+    "sector": "energy",
+    "year": 2025,
+    "quarters": {
+      "Q1": {
+        "revenue": 213.4,
+        "cost_of_revenue": 166.9,
+        "gross_margin_pct": 21.8,
+        "operating_income": 21.2,
+        "net_income": 15.7,
+        "capex": 17.7,
+        "cash": 306.0,
+        "total_debt": 110.3,
+        "headcount": 7870
+      },
+      "Q2": {
+        "revenue": 210.2,
+        "cost_of_revenue": 131.0,
+        "gross_margin_pct": 37.7,
+        "operating_income": 41.9,
+        "net_income": 27.8,
+        "capex": 23.7,
+        "cash": 259.1,
+        "total_debt": 254.9,
+        "headcount": 7100
+      },
+      "Q3": {
+        "revenue": 230.9,
+        "cost_of_revenue": 186.5,
+        "gross_margin_pct": 19.3,
+        "operating_income": 16.3,
+        "net_income": 11.4,
+        "capex": 13.7,
+        "cash": 150.0,
+        "total_debt": 267.0,
+        "headcount": 3590
+      },
+      "Q4": {
+        "revenue": 219.9,
+        "cost_of_revenue": 153.2,
+        "gross_margin_pct": 30.3,
+        "operating_income": 24.4,
+        "net_income": 15.6,
+        "capex": 21.3,
+        "cash": 249.2,
+        "total_debt": 153.1,
+        "headcount": 3210
+      }
+    },
+    "fy_revenue": 874.4
+  },
+  "CRT": {
+    "name": "Corvane Retail Group",
+    "sector": "retail",
+    "year": 2025,
+    "quarters": {
+      "Q1": {
+        "revenue": 596.3,
+        "cost_of_revenue": 488.8,
+        "gross_margin_pct": 18.0,
+        "operating_income": 60.9,
+        "net_income": 48.3,
+        "capex": 57.1,
+        "cash": 624.9,
+        "total_debt": 714.0,
+        "headcount": 1970
+      },
+      "Q2": {
+        "revenue": 608.5,
+        "cost_of_revenue": 396.2,
+        "gross_margin_pct": 34.9,
+        "operating_income": 78.6,
+        "net_income": 48.1,
+        "capex": 61.2,
+        "cash": 581.5,
+        "total_debt": 750.0,
+        "headcount": 7430
+      },
+      "Q3": {
+        "revenue": 563.8,
+        "cost_of_revenue": 411.0,
+        "gross_margin_pct": 27.1,
+        "operating_income": 49.6,
+        "net_income": 35.1,
+        "capex": 74.7,
+        "cash": 819.9,
+        "total_debt": 266.2,
+        "headcount": 5620
+      },
+      "Q4": {
+        "revenue": 520.0,
+        "cost_of_revenue": 293.2,
+        "gross_margin_pct": 43.6,
+        "operating_income": 72.2,
+        "net_income": 42.3,
+        "capex": 26.4,
+        "cash": 597.3,
+        "total_debt": 788.5,
+        "headcount": 3050
+      }
+    },
+    "fy_revenue": 2288.6
+  },
+  "DLH": {
+    "name": "Dellmont Health Systems",
+    "sector": "healthcare",
+    "year": 2025,
+    "quarters": {
+      "Q1": {
+        "revenue": 713.2,
+        "cost_of_revenue": 355.7,
+        "gross_margin_pct": 50.1,
+        "operating_income": 129.4,
+        "net_income": 82.9,
+        "capex": 55.2,
+        "cash": 976.2,
+        "total_debt": 919.1,
+        "headcount": 5010
+      },
+      "Q2": {
+        "revenue": 769.2,
+        "cost_of_revenue": 604.5,
+        "gross_margin_pct": 21.4,
+        "operating_income": 70.6,
+        "net_income": 43.1,
+        "capex": 61.7,
+        "cash": 984.2,
+        "total_debt": 1262.8,
+        "headcount": 7310
+      },
+      "Q3": {
+        "revenue": 808.4,
+        "cost_of_revenue": 464.7,
+        "gross_margin_pct": 42.5,
+        "operating_income": 87.1,
+        "net_income": 64.4,
+        "capex": 94.7,
+        "cash": 1127.5,
+        "total_debt": 681.6,
+        "headcount": 5690
+      },
+      "Q4": {
+        "revenue": 820.6,
+        "cost_of_revenue": 579.0,
+        "gross_margin_pct": 29.4,
+        "operating_income": 66.0,
+        "net_income": 51.7,
+        "capex": 54.9,
+        "cash": 786.0,
+        "total_debt": 1075.4,
+        "headcount": 6750
+      }
+    },
+    "fy_revenue": 3111.4
+  },
+  "EVS": {
+    "name": "Evenstar Semiconductors",
+    "sector": "semiconductors",
+    "year": 2025,
+    "quarters": {
+      "Q1": {
+        "revenue": 578.4,
+        "cost_of_revenue": 444.3,
+        "gross_margin_pct": 23.2,
+        "operating_income": 63.0,
+        "net_income": 38.6,
+        "capex": 77.1,
+        "cash": 614.6,
+        "total_debt": 383.7,
+        "headcount": 1560
+      },
+      "Q2": {
+        "revenue": 570.8,
+        "cost_of_revenue": 282.5,
+        "gross_margin_pct": 50.5,
+        "operating_income": 122.1,
+        "net_income": 72.7,
+        "capex": 52.3,
+        "cash": 274.1,
+        "total_debt": 302.6,
+        "headcount": 3980
+      },
+      "Q3": {
+        "revenue": 621.2,
+        "cost_of_revenue": 341.5,
+        "gross_margin_pct": 45.0,
+        "operating_income": 153.5,
+        "net_income": 84.7,
+        "capex": 62.2,
+        "cash": 801.5,
+        "total_debt": 785.7,
+        "headcount": 3840
+      },
+      "Q4": {
+        "revenue": 665.6,
+        "cost_of_revenue": 479.8,
+        "gross_margin_pct": 27.9,
+        "operating_income": 63.5,
+        "net_income": 39.2,
+        "capex": 71.1,
+        "cash": 744.3,
+        "total_debt": 800.2,
+        "headcount": 4830
+      }
+    },
+    "fy_revenue": 2436.0
+  },
+  "FRM": {
+    "name": "Fernmoor Agritech",
+    "sector": "agriculture",
+    "year": 2025,
+    "quarters": {
+      "Q1": {
+        "revenue": 650.8,
+        "cost_of_revenue": 457.5,
+        "gross_margin_pct": 29.7,
+        "operating_income": 69.8,
+        "net_income": 54.2,
+        "capex": 55.4,
+        "cash": 906.2,
+        "total_debt": 1296.5,
+        "headcount": 950
+      },
+      "Q2": {
+        "revenue": 645.3,
+        "cost_of_revenue": 315.1,
+        "gross_margin_pct": 51.2,
+        "operating_income": 168.3,
+        "net_income": 133.3,
+        "capex": 64.6,
+        "cash": 650.8,
+        "total_debt": 938.4,
+        "headcount": 7600
+      },
+      "Q3": {
+        "revenue": 675.0,
+        "cost_of_revenue": 307.3,
+        "gross_margin_pct": 54.5,
+        "operating_income": 198.1,
+        "net_income": 128.8,
+        "capex": 48.6,
+        "cash": 306.3,
+        "total_debt": 242.8,
+        "headcount": 8380
+      },
+      "Q4": {
+        "revenue": 659.8,
+        "cost_of_revenue": 305.6,
+        "gross_margin_pct": 53.7,
+        "operating_income": 201.7,
+        "net_income": 158.0,
+        "capex": 53.6,
+        "cash": 658.5,
+        "total_debt": 1195.8,
+        "headcount": 2990
+      }
+    },
+    "fy_revenue": 2630.9
+  },
+  "GLX": {
+    "name": "Galloway Telecom",
+    "sector": "telecom",
+    "year": 2025,
+    "quarters": {
+      "Q1": {
+        "revenue": 184.8,
+        "cost_of_revenue": 76.9,
+        "gross_margin_pct": 58.4,
+        "operating_income": 46.6,
+        "net_income": 35.2,
+        "capex": 8.4,
+        "cash": 215.9,
+        "total_debt": 341.0,
+        "headcount": 1550
+      },
+      "Q2": {
+        "revenue": 182.8,
+        "cost_of_revenue": 129.0,
+        "gross_margin_pct": 29.4,
+        "operating_income": 26.1,
+        "net_income": 14.4,
+        "capex": 19.2,
+        "cash": 136.8,
+        "total_debt": 250.2,
+        "headcount": 860
+      },
+      "Q3": {
+        "revenue": 168.6,
+        "cost_of_revenue": 137.7,
+        "gross_margin_pct": 18.3,
+        "operating_income": 15.5,
+        "net_income": 9.7,
+        "capex": 13.9,
+        "cash": 99.1,
+        "total_debt": 255.4,
+        "headcount": 5990
+      },
+      "Q4": {
+        "revenue": 166.2,
+        "cost_of_revenue": 110.4,
+        "gross_margin_pct": 33.6,
+        "operating_income": 16.6,
+        "net_income": 9.7,
+        "capex": 17.2,
+        "cash": 109.4,
+        "total_debt": 41.6,
+        "headcount": 5500
+      }
+    },
+    "fy_revenue": 702.4
+  },
+  "HZN": {
+    "name": "Hazelton Insurance Co.",
+    "sector": "insurance",
+    "year": 2025,
+    "quarters": {
+      "Q1": {
+        "revenue": 817.4,
+        "cost_of_revenue": 603.8,
+        "gross_margin_pct": 26.1,
+        "operating_income": 71.1,
+        "net_income": 53.2,
+        "capex": 35.2,
+        "cash": 980.2,
+        "total_debt": 577.3,
+        "headcount": 1610
+      },
+      "Q2": {
+        "revenue": 864.0,
+        "cost_of_revenue": 395.7,
+        "gross_margin_pct": 54.2,
+        "operating_income": 156.2,
+        "net_income": 102.3,
+        "capex": 80.9,
+        "cash": 472.4,
+        "total_debt": 1183.4,
+        "headcount": 7610
+      },
+      "Q3": {
+        "revenue": 832.6,
+        "cost_of_revenue": 666.2,
+        "gross_margin_pct": 20.0,
+        "operating_income": 94.1,
+        "net_income": 54.6,
+        "capex": 112.1,
+        "cash": 600.2,
+        "total_debt": 175.6,
+        "headcount": 3460
+      },
+      "Q4": {
+        "revenue": 788.6,
+        "cost_of_revenue": 575.8,
+        "gross_margin_pct": 27.0,
+        "operating_income": 119.0,
+        "net_income": 73.4,
+        "capex": 101.4,
+        "cash": 863.2,
+        "total_debt": 336.8,
+        "headcount": 1150
+      }
+    },
+    "fy_revenue": 3302.6
+  },
+  "IRV": {
+    "name": "Irvane Aerospace",
+    "sector": "aerospace",
+    "year": 2025,
+    "quarters": {
+      "Q1": {
+        "revenue": 884.2,
+        "cost_of_revenue": 670.9,
+        "gross_margin_pct": 24.1,
+        "operating_income": 64.8,
+        "net_income": 48.0,
+        "capex": 92.1,
+        "cash": 1268.1,
+        "total_debt": 329.5,
+        "headcount": 920
+      },
+      "Q2": {
+        "revenue": 849.5,
+        "cost_of_revenue": 450.5,
+        "gross_margin_pct": 47.0,
+        "operating_income": 177.3,
+        "net_income": 127.4,
+        "capex": 32.0,
+        "cash": 639.7,
+        "total_debt": 1141.3,
+        "headcount": 1680
+      },
+      "Q3": {
+        "revenue": 834.9,
+        "cost_of_revenue": 420.7,
+        "gross_margin_pct": 49.6,
+        "operating_income": 175.5,
+        "net_income": 103.8,
+        "capex": 112.6,
+        "cash": 512.1,
+        "total_debt": 496.4,
+        "headcount": 5910
+      },
+      "Q4": {
+        "revenue": 804.0,
+        "cost_of_revenue": 548.2,
+        "gross_margin_pct": 31.8,
+        "operating_income": 134.3,
+        "net_income": 79.1,
+        "capex": 69.3,
+        "cash": 646.8,
+        "total_debt": 209.1,
+        "headcount": 2200
+      }
+    },
+    "fy_revenue": 3372.6
+  },
+  "JNP": {
+    "name": "Juniper Vale Foods",
+    "sector": "consumer foods",
+    "year": 2025,
+    "quarters": {
+      "Q1": {
+        "revenue": 694.3,
+        "cost_of_revenue": 375.0,
+        "gross_margin_pct": 46.0,
+        "operating_income": 185.0,
+        "net_income": 104.0,
+        "capex": 48.9,
+        "cash": 967.5,
+        "total_debt": 311.4,
+        "headcount": 7580
+      },
+      "Q2": {
+        "revenue": 713.5,
+        "cost_of_revenue": 435.6,
+        "gross_margin_pct": 38.9,
+        "operating_income": 109.7,
+        "net_income": 86.7,
+        "capex": 75.7,
+        "cash": 596.5,
+        "total_debt": 1201.6,
+        "headcount": 5010
+      },
+      "Q3": {
+        "revenue": 674.7,
+        "cost_of_revenue": 517.8,
+        "gross_margin_pct": 23.3,
+        "operating_income": 48.7,
+        "net_income": 36.5,
+        "capex": 29.4,
+        "cash": 749.9,
+        "total_debt": 546.1,
+        "headcount": 6450
+      },
+      "Q4": {
+        "revenue": 623.2,
+        "cost_of_revenue": 508.5,
+        "gross_margin_pct": 18.4,
+        "operating_income": 31.9,
+        "net_income": 24.5,
+        "capex": 42.0,
+        "cash": 750.8,
+        "total_debt": 981.4,
+        "headcount": 8800
+      }
+    },
+    "fy_revenue": 2705.7
+  },
+  "KST": {
+    "name": "Kestrel Software",
+    "sector": "software",
+    "year": 2025,
+    "quarters": {
+      "Q1": {
+        "revenue": 301.2,
+        "cost_of_revenue": 246.4,
+        "gross_margin_pct": 18.2,
+        "operating_income": 23.6,
+        "net_income": 18.5,
+        "capex": 11.6,
+        "cash": 307.4,
+        "total_debt": 384.4,
+        "headcount": 3860
+      },
+      "Q2": {
+        "revenue": 316.5,
+        "cost_of_revenue": 185.4,
+        "gross_margin_pct": 41.4,
+        "operating_income": 56.6,
+        "net_income": 43.7,
+        "capex": 33.4,
+        "cash": 442.7,
+        "total_debt": 583.3,
+        "headcount": 2980
+      },
+      "Q3": {
+        "revenue": 303.5,
+        "cost_of_revenue": 150.1,
+        "gross_margin_pct": 50.5,
+        "operating_income": 44.9,
+        "net_income": 29.9,
+        "capex": 15.9,
+        "cash": 444.9,
+        "total_debt": 465.2,
+        "headcount": 3570
+      },
+      "Q4": {
+        "revenue": 331.9,
+        "cost_of_revenue": 178.4,
+        "gross_margin_pct": 46.3,
+        "operating_income": 43.8,
+        "net_income": 31.8,
+        "capex": 18.5,
+        "cash": 199.5,
+        "total_debt": 372.9,
+        "headcount": 8900
+      }
+    },
+    "fy_revenue": 1253.1
+  },
+  "LMR": {
+    "name": "Lumaris Pharmaceuticals",
+    "sector": "pharmaceuticals",
+    "year": 2025,
+    "quarters": {
+      "Q1": {
+        "revenue": 232.5,
+        "cost_of_revenue": 161.7,
+        "gross_margin_pct": 30.4,
+        "operating_income": 36.4,
+        "net_income": 21.7,
+        "capex": 11.6,
+        "cash": 243.2,
+        "total_debt": 313.5,
+        "headcount": 1000
+      },
+      "Q2": {
+        "revenue": 234.2,
+        "cost_of_revenue": 99.7,
+        "gross_margin_pct": 57.4,
+        "operating_income": 39.7,
+        "net_income": 24.9,
+        "capex": 10.3,
+        "cash": 201.8,
+        "total_debt": 255.7,
+        "headcount": 4810
+      },
+      "Q3": {
+        "revenue": 237.7,
+        "cost_of_revenue": 181.8,
+        "gross_margin_pct": 23.5,
+        "operating_income": 20.1,
+        "net_income": 11.8,
+        "capex": 17.7,
+        "cash": 110.0,
+        "total_debt": 303.1,
+        "headcount": 6280
+      },
+      "Q4": {
+        "revenue": 223.0,
+        "cost_of_revenue": 101.0,
+        "gross_margin_pct": 54.7,
+        "operating_income": 40.9,
+        "net_income": 27.0,
+        "capex": 21.7,
+        "cash": 146.2,
+        "total_debt": 108.8,
+        "headcount": 4950
+      }
+    },
+    "fy_revenue": 927.4
+  },
+  "MRD": {
+    "name": "Meridian Steelworks",
+    "sector": "materials",
+    "year": 2025,
+    "quarters": {
+      "Q1": {
+        "revenue": 710.4,
+        "cost_of_revenue": 520.1,
+        "gross_margin_pct": 26.8,
+        "operating_income": 58.3,
+        "net_income": 36.1,
+        "capex": 95.0,
+        "cash": 994.3,
+        "total_debt": 192.4,
+        "headcount": 6970
+      },
+      "Q2": {
+        "revenue": 683.5,
+        "cost_of_revenue": 435.7,
+        "gross_margin_pct": 36.3,
+        "operating_income": 74.0,
+        "net_income": 46.4,
+        "capex": 42.5,
+        "cash": 500.6,
+        "total_debt": 913.7,
+        "headcount": 3700
+      },
+      "Q3": {
+        "revenue": 677.2,
+        "cost_of_revenue": 522.7,
+        "gross_margin_pct": 22.8,
+        "operating_income": 73.7,
+        "net_income": 49.7,
+        "capex": 63.5,
+        "cash": 630.9,
+        "total_debt": 652.8,
+        "headcount": 1680
+      },
+      "Q4": {
+        "revenue": 680.6,
+        "cost_of_revenue": 458.3,
+        "gross_margin_pct": 32.7,
+        "operating_income": 101.5,
+        "net_income": 76.4,
+        "capex": 75.6,
+        "cash": 974.8,
+        "total_debt": 821.3,
+        "headcount": 4080
+      }
+    },
+    "fy_revenue": 2751.7
+  },
+  "NTH": {
+    "name": "Northcove Real Estate Trust",
+    "sector": "real estate",
+    "year": 2025,
+    "quarters": {
+      "Q1": {
+        "revenue": 252.6,
+        "cost_of_revenue": 182.2,
+        "gross_margin_pct": 27.9,
+        "operating_income": 26.2,
+        "net_income": 20.5,
+        "capex": 23.2,
+        "cash": 128.1,
+        "total_debt": 239.4,
+        "headcount": 1870
+      },
+      "Q2": {
+        "revenue": 267.0,
+        "cost_of_revenue": 172.9,
+        "gross_margin_pct": 35.2,
+        "operating_income": 34.2,
+        "net_income": 26.9,
+        "capex": 35.0,
+        "cash": 217.3,
+        "total_debt": 509.0,
+        "headcount": 6600
+      },
+      "Q3": {
+        "revenue": 281.6,
+        "cost_of_revenue": 169.7,
+        "gross_margin_pct": 39.7,
+        "operating_income": 48.0,
+        "net_income": 36.8,
+        "capex": 27.0,
+        "cash": 185.8,
+        "total_debt": 60.4,
+        "headcount": 920
+      },
+      "Q4": {
+        "revenue": 285.0,
+        "cost_of_revenue": 140.4,
+        "gross_margin_pct": 50.7,
+        "operating_income": 65.2,
+        "net_income": 37.7,
+        "capex": 42.7,
+        "cash": 186.2,
+        "total_debt": 331.6,
+        "headcount": 3790
+      }
+    },
+    "fy_revenue": 1086.2
+  },
+  "OKW": {
+    "name": "Oakwell Water Utilities",
+    "sector": "utilities",
+    "year": 2025,
+    "quarters": {
+      "Q1": {
+        "revenue": 832.1,
+        "cost_of_revenue": 666.3,
+        "gross_margin_pct": 19.9,
+        "operating_income": 61.8,
+        "net_income": 46.4,
+        "capex": 96.8,
+        "cash": 456.9,
+        "total_debt": 540.4,
+        "headcount": 4520
+      },
+      "Q2": {
+        "revenue": 808.5,
+        "cost_of_revenue": 594.7,
+        "gross_margin_pct": 26.4,
+        "operating_income": 126.2,
+        "net_income": 83.7,
+        "capex": 33.1,
+        "cash": 978.4,
+        "total_debt": 1589.5,
+        "headcount": 4220
+      },
+      "Q3": {
+        "revenue": 837.6,
+        "cost_of_revenue": 532.1,
+        "gross_margin_pct": 36.5,
+        "operating_income": 138.1,
+        "net_income": 94.0,
+        "capex": 48.9,
+        "cash": 844.4,
+        "total_debt": 531.5,
+        "headcount": 3100
+      },
+      "Q4": {
+        "revenue": 837.4,
+        "cost_of_revenue": 531.2,
+        "gross_margin_pct": 36.6,
+        "operating_income": 149.5,
+        "net_income": 102.3,
+        "capex": 29.2,
+        "cash": 967.3,
+        "total_debt": 228.4,
+        "headcount": 8090
+      }
+    },
+    "fy_revenue": 3315.6
+  }
+}
