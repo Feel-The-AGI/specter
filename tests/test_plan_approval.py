@@ -4,13 +4,20 @@ from contracts.models import UseCaseSpec
 from eval_intelligence_engine.approval import approve, verify
 from eval_intelligence_engine.planner import generate_plan
 
-SPEC = UseCaseSpec(name="finance-qa", description="doc-grounded QA", languages=["en", "es"], risks=["canary_leak"])
+SPEC = UseCaseSpec(
+    name="finance-qa",
+    description="doc-grounded QA",
+    languages=["en", "es"],
+    risks=["canary_leak", "regulatory_certification"],
+)
 
 
 def test_plan_is_deterministic_and_lists_gaps():
     a, b = approve(generate_plan(SPEC)), approve(generate_plan(SPEC))
     assert a.approval_sha256 == b.approval_sha256
-    assert "canary_leak" in a.gaps or "canary_leak" in {m.name for m in a.metrics}
+    assert "regulatory_certification" in a.gaps
+    assert "canary_leak" not in a.gaps
+    assert any(m.name == "canary_leak" and m.tier == "secondary" and m.oracle == "exact_match" for m in a.metrics)
     assert any(m.name == "harmful_refusal_es" for m in a.metrics)
 
 
